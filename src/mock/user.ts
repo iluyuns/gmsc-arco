@@ -40,7 +40,7 @@ setupMock({
     });
 
     // 登录
-    Mock.mock(new RegExp('/api/user/login'), (params: MockParams) => {
+    Mock.mock(new RegExp('/v1/user/login'), (params: MockParams) => {
       const { username, password } = JSON.parse(params.body);
       if (!username) {
         return failResponseWrap(null, '用户名不能为空', 50000);
