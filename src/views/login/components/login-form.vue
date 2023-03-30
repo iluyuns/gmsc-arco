@@ -73,6 +73,7 @@
   import { useUserStore } from '@/store';
   import useLoading from '@/hooks/loading';
   import type { LoginData } from '@/api/user';
+  import { AxiosError } from 'axios';
 
   const router = useRouter();
   const { t } = useI18n();
@@ -117,7 +118,7 @@
         loginConfig.value.username = rememberPassword ? username : '';
         loginConfig.value.password = rememberPassword ? password : '';
       } catch (err) {
-        errorMessage.value = (err as Error).message;
+        errorMessage.value = (err as AxiosError).response?.data.message || '';
       } finally {
         setLoading(false);
       }
