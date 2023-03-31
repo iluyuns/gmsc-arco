@@ -24,6 +24,7 @@ import locale404 from '@/views/exception/404/locale/en-US';
 import locale500 from '@/views/exception/500/locale/en-US';
 
 import localeUserInfo from '@/views/user/info/locale/en-US';
+import localeUserList from '@/views/user/list/locale/en-US';
 import localeUserSetting from '@/views/user/setting/locale/en-US';
 
 import localeSettings from './en-US/settings';
@@ -63,5 +64,6 @@ export default {
   ...locale404,
   ...locale500,
   ...localeUserInfo,
+  ...localeUserList,
   ...localeUserSetting,
 };

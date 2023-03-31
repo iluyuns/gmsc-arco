@@ -23,6 +23,16 @@ const USER: AppRouteRecordRaw = {
       },
     },
     {
+      path: 'list',
+      name: 'UserList',
+      component: () => import('@/views/user/list/index.vue'),
+      meta: {
+        locale: 'menu.user.list',
+        requiresAuth: true,
+        roles: ['*'],
+      },
+    },
+    {
       path: 'setting',
       name: 'Setting',
       component: () => import('@/views/user/setting/index.vue'),

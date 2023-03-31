@@ -24,6 +24,7 @@ import locale404 from '@/views/exception/404/locale/zh-CN';
 import locale500 from '@/views/exception/500/locale/zh-CN';
 
 import localeUserInfo from '@/views/user/info/locale/zh-CN';
+import localeUserList from '@/views/user/list/locale/zh-CN';
 import localeUserSetting from '@/views/user/setting/locale/zh-CN';
 
 import localeSettings from './zh-CN/settings';
@@ -63,5 +64,6 @@ export default {
   ...locale404,
   ...locale500,
   ...localeUserInfo,
+  ...localeUserList,
   ...localeUserSetting,
 };

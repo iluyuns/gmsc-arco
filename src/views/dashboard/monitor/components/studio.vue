@@ -12,10 +12,11 @@
         <div v-if="userInfo">
           <a-space :size="12">
             <a-avatar :size="24">
-              <img :src="userInfo.avatar" />
+              <img :src="userInfo.user.avatar_url" />
             </a-avatar>
             <a-typography-text>
-              {{ userInfo.name }} {{ $t('monitor.studioPreview.studio') }}
+              {{ userInfo.user.nick_name }}
+              {{ $t('monitor.studioPreview.studio') }}
             </a-typography-text>
           </a-space>
         </div>
@@ -37,9 +38,9 @@
   .studio {
     &-preview {
       display: block;
+      width: 100%;
       max-width: 600px;
       margin: 0 auto;
-      width: 100%;
     }
 
     &-bar {

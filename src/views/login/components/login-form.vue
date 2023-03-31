@@ -1,7 +1,7 @@
 <template>
   <div class="login-form-wrapper">
     <div class="login-form-title">{{ $t('login.form.title') }}</div>
-    <div class="login-form-sub-title">{{ $t('login.form.title') }}</div>
+    <!-- <div class="login-form-sub-title">{{ $t('login.form.title') }}</div> -->
     <div class="login-form-error-msg">{{ errorMessage }}</div>
     <a-form
       ref="loginForm"
@@ -75,7 +75,7 @@
   import { useUserStore } from '@/store';
   import useLoading from '@/hooks/loading';
   import type { LoginData } from '@/api/user';
-  import { AxiosError } from 'axios';
+  import { HttpResponse } from '@/api/interceptor';
 
   const router = useRouter();
   const { t } = useI18n();
@@ -120,7 +120,7 @@
         loginConfig.value.username = rememberPassword ? username : '';
         loginConfig.value.password = rememberPassword ? password : '';
       } catch (err) {
-        const data = (err as AxiosError).response?.data;
+        const data = err as HttpResponse;
         errorMessage.value = data.message + data.explanation;
       } finally {
         setLoading(false);

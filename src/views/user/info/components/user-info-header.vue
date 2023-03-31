@@ -5,26 +5,28 @@
         <template #trigger-icon>
           <icon-camera />
         </template>
-        <img :src="userInfo.avatar" />
+        <img :src="userInfo.user.avatar_url" />
       </a-avatar>
       <a-typography-title :heading="6" style="margin: 0">
-        {{ userInfo.name }}
+        {{ userInfo.user.nick_name }}
       </a-typography-title>
       <div class="user-msg">
         <a-space :size="18">
           <div>
             <icon-user />
-            <a-typography-text>{{ userInfo.jobName }}</a-typography-text>
+            <a-typography-text>{{ userInfo.user.jobName }}</a-typography-text>
           </div>
           <div>
             <icon-home />
             <a-typography-text>
-              {{ userInfo.organizationName }}
+              {{ userInfo.user.departmentName }}
             </a-typography-text>
           </div>
           <div>
             <icon-location />
-            <a-typography-text>{{ userInfo.locationName }}</a-typography-text>
+            <a-typography-text>{{
+              userInfo.user.locationName
+            }}</a-typography-text>
           </div>
         </a-space>
       </div>
@@ -57,10 +59,12 @@
         vertical-align: -1px;
       }
     }
+
     .user-msg {
       .arco-icon {
         color: rgb(var(--gray-10));
       }
+
       .arco-typography {
         margin-left: 6px;
       }

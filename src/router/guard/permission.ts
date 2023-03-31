@@ -45,8 +45,10 @@ export default function setupPermissionGuard(router: Router) {
       if (permissionsAllow) next();
       else {
         const destination =
-          Permission.findFirstPermissionRoute(appRoutes, userStore.role) ||
-          NOT_FOUND;
+          Permission.findFirstPermissionRoute(
+            appRoutes,
+            userStore.user.nick_name
+          ) || NOT_FOUND;
         next(destination);
       }
     }

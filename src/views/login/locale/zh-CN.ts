@@ -4,6 +4,7 @@ export default {
   'login.form.password.errMsg': '密码不能为空',
   'login.form.login.errMsg': '登录出错，轻刷新重试',
   'login.form.login.success': '欢迎使用',
+  'login.form.logout.success': '登出成功',
   'login.form.userName.placeholder': '',
   'login.form.password.placeholder': '',
   'login.form.rememberPassword': '记住密码',

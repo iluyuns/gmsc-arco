@@ -2,49 +2,31 @@ import { defineStore } from 'pinia';
 import {
   login as userLogin,
   logout as userLogout,
+  UserInfo,
   getUserInfo,
   LoginData,
 } from '@/api/user';
 import { setToken, clearToken } from '@/utils/auth';
 import { removeRouteListener } from '@/utils/route-listener';
-import { UserState } from './types';
+// import { HttpResponse } from '@/api/interceptor';
+// import { Message } from '@arco-design/web-vue';
 import useAppStore from '../app';
 
 const useUserStore = defineStore('user', {
-  state: (): UserState => ({
-    name: undefined,
-    avatar: undefined,
-    job: undefined,
-    organization: undefined,
-    location: undefined,
-    email: undefined,
-    introduction: undefined,
-    personalWebsite: undefined,
-    jobName: undefined,
-    organizationName: undefined,
-    locationName: undefined,
-    phone: undefined,
-    registrationDate: undefined,
-    accountId: undefined,
-    certification: undefined,
-    role: '',
+  state: (): UserInfo => ({
+    message: '',
+    status: 0,
+    user: {},
   }),
-
   getters: {
-    userInfo(state: UserState): UserState {
+    userInfo(state: UserInfo): UserInfo {
       return { ...state };
     },
   },
 
   actions: {
-    switchRoles() {
-      return new Promise((resolve) => {
-        this.role = this.role === 'user' ? 'admin' : 'user';
-        resolve(this.role);
-      });
-    },
     // Set user's information
-    setInfo(partial: Partial<UserState>) {
+    setInfo(partial: Partial<UserInfo>) {
       this.$patch(partial);
     },
 
@@ -56,16 +38,14 @@ const useUserStore = defineStore('user', {
     // Get user's information
     async info() {
       const res = await getUserInfo();
-
-      this.setInfo(res.data);
+      this.setInfo(res);
     },
 
     // Login
     async login(loginForm: LoginData) {
       try {
         const res = await userLogin(loginForm);
-        const data = res as any;
-        setToken(data.token);
+        if (res.token) setToken(res.token);
       } catch (err) {
         clearToken();
         throw err;
@@ -80,11 +60,16 @@ const useUserStore = defineStore('user', {
     },
     // Logout
     async logout() {
-      try {
-        await userLogout();
-      } finally {
-        this.logoutCallBack();
-      }
+      return new Promise((resolve, reject) => {
+        userLogout()
+          .then((r) => {
+            this.logoutCallBack();
+            resolve(r);
+          })
+          .catch((err) => {
+            reject(err);
+          });
+      });
     },
   },
 });
