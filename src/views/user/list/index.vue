@@ -196,48 +196,25 @@
         <template #index="{ rowIndex }">
           {{ rowIndex + 1 + (pagination.current - 1) * pagination.pageSize }}
         </template>
-        <template #contentType="{ record }">
+        <template #avatar_url="{ record }">
           <a-space>
-            <a-avatar
-              v-if="record.contentType === 'img'"
-              :size="16"
-              shape="square"
-            >
+            <a-avatar :size="36" shape="square">
               <img
                 alt="avatar"
-                src="//p3-armor.byteimg.com/tos-cn-i-49unhts6dw/581b17753093199839f2e327e726b157.svg~tplv-49unhts6dw-image.image"
+                :src="
+                  record.avatar_url ||
+                  `${apiBaseUrl}/v1/user/generate/avatar/${record.uuid}`
+                "
               />
             </a-avatar>
-            <a-avatar
-              v-else-if="record.contentType === 'horizontalVideo'"
-              :size="16"
-              shape="square"
-            >
-              <img
-                alt="avatar"
-                src="//p3-armor.byteimg.com/tos-cn-i-49unhts6dw/77721e365eb2ab786c889682cbc721c1.svg~tplv-49unhts6dw-image.image"
-              />
-            </a-avatar>
-            <a-avatar v-else :size="16" shape="square">
-              <img
-                alt="avatar"
-                src="//p3-armor.byteimg.com/tos-cn-i-49unhts6dw/ea8b09190046da0ea7e070d83c5d1731.svg~tplv-49unhts6dw-image.image"
-              />
-            </a-avatar>
-            {{ $t(`searchTable.form.contentType.${record.contentType}`) }}
           </a-space>
-        </template>
-        <template #filterType="{ record }">
-          {{ $t(`searchTable.form.filterType.${record.filterType}`) }}
-        </template>
-        <template #status="{ record }">
-          <span v-if="record.status === 'offline'" class="circle"></span>
-          <span v-else class="circle pass"></span>
-          {{ $t(`searchTable.form.status.${record.status}`) }}
         </template>
         <template #operations>
           <a-button v-permission="['admin']" type="text" size="small">
-            {{ $t('searchTable.columns.operations.view') }}
+            {{ $t('menu.user.list.table.operations.edit') }}
+          </a-button>
+          <a-button type="text" size="small">
+            {{ $t('menu.user.list.table.operations.edit') }}
           </a-button>
         </template>
       </a-table>
@@ -256,6 +233,7 @@
   import cloneDeep from 'lodash/cloneDeep';
   import Sortable from 'sortablejs';
 
+  const apiBaseUrl = import.meta.env.VITE_API_BASE_URL as string;
   type SizeProps = 'mini' | 'small' | 'medium' | 'large';
   type Column = TableColumnData & { checked?: true };
 
@@ -305,44 +283,74 @@
   ]);
   const columns = computed<TableColumnData[]>(() => [
     {
-      title: t('searchTable.columns.index'),
-      dataIndex: 'index',
-      slotName: 'index',
+      title: t('menu.user.list.table.id'),
+      dataIndex: 'id',
+      slotName: 'id',
+      ellipsis: true,
+      tooltip: true,
+      width: 80,
     },
     {
-      title: t('searchTable.columns.number'),
-      dataIndex: 'number',
+      title: t('menu.user.list.table.avatar_url'),
+      dataIndex: 'avatar_url',
+      slotName: 'avatar_url',
+      width: 80,
     },
     {
-      title: t('searchTable.columns.name'),
+      title: t('menu.user.list.table.nick_name'),
+      dataIndex: 'nick_name',
+      ellipsis: true,
+      tooltip: true,
+      width: 120,
+    },
+    {
+      title: t('menu.user.list.table.name'),
       dataIndex: 'name',
+      ellipsis: true,
+      tooltip: true,
+      width: 80,
     },
     {
-      title: t('searchTable.columns.contentType'),
-      dataIndex: 'contentType',
-      slotName: 'contentType',
+      title: t('menu.user.list.table.phone'),
+      dataIndex: 'phone',
+      ellipsis: true,
+      tooltip: true,
+      width: 150,
     },
     {
-      title: t('searchTable.columns.filterType'),
-      dataIndex: 'filterType',
+      title: t('menu.user.list.table.username'),
+      dataIndex: 'username',
+      ellipsis: true,
+      tooltip: true,
+      width: 160,
     },
     {
-      title: t('searchTable.columns.count'),
-      dataIndex: 'count',
+      title: t('menu.user.list.table.email'),
+      dataIndex: 'email',
+      ellipsis: true,
+      tooltip: true,
+      width: 160,
     },
     {
-      title: t('searchTable.columns.createdTime'),
-      dataIndex: 'createdTime',
+      title: t('menu.user.list.table.created_at'),
+      dataIndex: 'created_at',
+      ellipsis: true,
+      tooltip: true,
+      width: 160,
     },
     {
-      title: t('searchTable.columns.status'),
-      dataIndex: 'status',
-      slotName: 'status',
+      title: t('menu.user.list.table.updated_at'),
+      dataIndex: 'updated_at',
+      ellipsis: true,
+      tooltip: true,
+      width: 160,
     },
     {
-      title: t('searchTable.columns.operations'),
+      title: t('menu.user.list.table.operations'),
       dataIndex: 'operations',
       slotName: 'operations',
+      fixed: 'right',
+      width: 200,
     },
   ]);
   const contentTypeOptions = computed<SelectOptionData[]>(() => [

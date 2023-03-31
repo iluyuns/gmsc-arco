@@ -67,7 +67,12 @@ const useUserStore = defineStore('user', {
             resolve(r);
           })
           .catch((err) => {
-            reject(err);
+            if (err.message === 'Network Error') {
+              reject(err);
+            } else {
+              this.logoutCallBack();
+              resolve(err);
+            }
           });
       });
     },

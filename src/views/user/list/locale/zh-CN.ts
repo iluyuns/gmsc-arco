@@ -1,3 +1,17 @@
 export default {
   'menu.user.list': '用户列表',
+  'menu.user.list.table.id': 'ID',
+  'menu.user.list.table.name': '姓名',
+  'menu.user.list.table.phone': '手机号',
+  'menu.user.list.table.username': '用户名（登陆名）',
+  'menu.user.list.table.nick_name': '昵称',
+  'menu.user.list.table.avatar_url': '头像',
+  'menu.user.list.table.email': '邮箱',
+  'menu.user.list.table.created_at': '注册时间',
+  'menu.user.list.table.updated_at': '更新时间',
+  'menu.user.list.table.operations': '操作',
+  'menu.user.list.table.operations.edit': '编辑',
+  'menu.user.list.table.operations.delete': '删除',
+  'menu.user.list.table.operations.resetPassword': '重置密码',
+  'menu.user.list.table.operations.resetPassword.confirm': '确认重置密码？',
 };
