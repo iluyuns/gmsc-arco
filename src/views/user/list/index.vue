@@ -209,6 +209,32 @@
             </a-avatar>
           </a-space>
         </template>
+        <template #user_role="{ record }">
+          <a-space
+            v-for="item in record.user_role"
+            :key="item.value"
+            :value="item.role.name"
+          >
+            <div style="padding: 0 8px">
+              <a-tag color="arcoblue" bordered style="" size="small">
+                {{ item.role.name }}
+              </a-tag>
+            </div>
+          </a-space>
+        </template>
+        <template #is_easy_business="{ record }">
+          <a-tag :color="record.is_easy_business ? 'green' : 'gray'">
+            <template #icon>
+              <icon-check-circle-fill v-if="record.is_easy_business" />
+              <icon-close-circle-fill v-else />
+            </template>
+            {{
+              record.is_easy_business
+                ? $t('menu.user.list.table.is_easy_business.true')
+                : $t('menu.user.list.table.is_easy_business.false')
+            }}
+          </a-tag>
+        </template>
         <template #operations>
           <a-button v-permission="['admin']" type="text" size="small">
             {{ $t('menu.user.list.table.operations.edit') }}
@@ -327,6 +353,109 @@
     {
       title: t('menu.user.list.table.email'),
       dataIndex: 'email',
+      ellipsis: true,
+      tooltip: true,
+      width: 160,
+    },
+    {
+      title: t('menu.user.list.table.is_easy_business'),
+      dataIndex: 'is_easy_business',
+      slotName: 'is_easy_business',
+      ellipsis: true,
+      tooltip: true,
+      width: 160,
+    },
+    {
+      title: t('menu.user.list.table.parent.id'),
+      dataIndex: 'parent.id',
+      ellipsis: true,
+      tooltip: true,
+      width: 160,
+    },
+    {
+      title: t('menu.user.list.table.parent.nick_name'),
+      dataIndex: 'parent.nick_name',
+      ellipsis: true,
+      tooltip: true,
+      width: 160,
+    },
+    // point
+    {
+      title: t('menu.user.list.table.point'),
+      dataIndex: 'point',
+      ellipsis: true,
+      tooltip: true,
+      width: 160,
+    },
+    {
+      title: t('menu.user.list.table.income_cash'),
+      dataIndex: 'income_cash',
+      ellipsis: true,
+      tooltip: true,
+      width: 160,
+    },
+    // available_balance
+    {
+      title: t('menu.user.list.table.available_balance'),
+      dataIndex: 'available_balance',
+      ellipsis: true,
+      tooltip: true,
+      width: 160,
+    },
+    {
+      title: t('menu.user.list.table.grade.name'),
+      dataIndex: 'grade.name',
+      ellipsis: true,
+      tooltip: true,
+      width: 160,
+    },
+    {
+      title: t('menu.user.list.table.user_role'),
+      dataIndex: 'user_role',
+      slotName: 'user_role',
+      ellipsis: true,
+      tooltip: true,
+      width: 260,
+    },
+    // birthday
+    {
+      title: t('menu.user.list.table.birthday'),
+      dataIndex: 'birthday',
+      ellipsis: true,
+      tooltip: true,
+      width: 160,
+    },
+    {
+      title: t('menu.user.list.table.union_id'),
+      dataIndex: 'union_id',
+      ellipsis: true,
+      tooltip: true,
+      width: 160,
+    },
+    {
+      title: t('menu.user.list.table.open_id'),
+      dataIndex: 'open_id',
+      ellipsis: true,
+      tooltip: true,
+      width: 160,
+    },
+    {
+      title: t('menu.user.list.table.uuid'),
+      dataIndex: 'uuid',
+      ellipsis: true,
+      tooltip: true,
+      width: 160,
+    },
+    {
+      title: t('menu.user.list.table.source'),
+      dataIndex: 'source',
+      ellipsis: true,
+      tooltip: true,
+      width: 160,
+    },
+    {
+      title: t('menu.user.list.table.source_desc'),
+      dataIndex: 'source_desc',
       ellipsis: true,
       tooltip: true,
       width: 160,
