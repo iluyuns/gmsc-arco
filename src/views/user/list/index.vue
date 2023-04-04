@@ -11,7 +11,7 @@
             label-align="left"
           >
             <a-row :gutter="16">
-              <a-col :span="4">
+              <a-col :span="6">
                 <a-form-item
                   field="id"
                   :label="$t('menu.user.list.table.is_easy_business')"
@@ -26,7 +26,7 @@
                   </a-switch>
                 </a-form-item>
               </a-col>
-              <a-col :span="4">
+              <a-col :span="6">
                 <a-form-item field="id" :label="$t('menu.user.list.table.id')">
                   <a-input-number
                     v-model="formModel.id"
@@ -234,15 +234,15 @@
             </a-avatar>
           </a-space>
         </template>
-        <template #user_role="{ record }">
+        <template #user_roles="{ record }">
           <a-space
-            v-for="item in record.user_role"
+            v-for="item in record.user_roles"
             :key="item.value"
-            :value="item.role.name"
+            :value="item.name"
           >
             <div style="padding: 0 8px">
               <a-tag color="arcoblue" bordered style="" size="small">
-                {{ item.role.name }}
+                {{ item.name }}
               </a-tag>
             </div>
           </a-space>
@@ -440,9 +440,9 @@
       width: 160,
     },
     {
-      title: t('menu.user.list.table.user_role'),
-      dataIndex: 'user_role',
-      slotName: 'user_role',
+      title: t('menu.user.list.table.user_roles'),
+      dataIndex: 'user_roles',
+      slotName: 'user_roles',
       ellipsis: true,
       tooltip: true,
       width: 260,
