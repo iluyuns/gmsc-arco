@@ -74,10 +74,13 @@ export interface UserListResponse extends httpResponse {
 
 export interface UserListPolicyParams {
   id?: number;
+  parent_id?: number;
   name?: string;
   username?: string;
   nick_name?: string;
   phone?: string;
+  created_at?: Array<string>;
+  is_easy_business?: boolean;
 }
 
 export interface UserListParams extends PageQuery, UserListPolicyParams {}

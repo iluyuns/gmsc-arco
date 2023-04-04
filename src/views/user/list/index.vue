@@ -1,7 +1,7 @@
 <template>
   <div class="container">
-    <Breadcrumb :items="['menu.list', 'menu.list.searchTable']" />
-    <a-card class="general-card" :title="$t('menu.list.searchTable')">
+    <Breadcrumb :items="['menu.user', 'menu.user.list']" />
+    <a-card class="general-card" :title="$t('menu.user.list')">
       <a-row>
         <a-col :flex="1">
           <a-form
@@ -11,69 +11,98 @@
             label-align="left"
           >
             <a-row :gutter="16">
-              <a-col :span="8">
+              <a-col :span="4">
                 <a-form-item
-                  field="number"
-                  :label="$t('searchTable.form.number')"
+                  field="id"
+                  :label="$t('menu.user.list.table.is_easy_business')"
                 >
-                  <a-input
-                    v-model="formModel.number"
-                    :placeholder="$t('searchTable.form.number.placeholder')"
+                  <a-switch v-model="formModel.is_easy_business">
+                    <template #checked>
+                      {{ $t('menu.user.list.table.is_easy_business.true') }}
+                    </template>
+                    <template #unchecked>
+                      {{ $t('menu.user.list.table.is_easy_business.false') }}
+                    </template>
+                  </a-switch>
+                </a-form-item>
+              </a-col>
+              <a-col :span="4">
+                <a-form-item field="id" :label="$t('menu.user.list.table.id')">
+                  <a-input-number
+                    v-model="formModel.id"
+                    :placeholder="$t('menu.user.list.table.id.placeholder')"
                   />
                 </a-form-item>
               </a-col>
-              <a-col :span="8">
-                <a-form-item field="name" :label="$t('searchTable.form.name')">
+              <a-col :span="6">
+                <a-form-item
+                  field="parent_id"
+                  :label="$t('menu.user.list.table.parent.id')"
+                >
+                  <a-input-number
+                    v-model="formModel.parent_id"
+                    :placeholder="
+                      $t('menu.user.list.table.parent.id.placeholder')
+                    "
+                  />
+                </a-form-item>
+              </a-col>
+              <a-col :span="6">
+                <a-form-item
+                  field="name"
+                  :label="$t('menu.user.list.table.name')"
+                >
                   <a-input
                     v-model="formModel.name"
-                    :placeholder="$t('searchTable.form.name.placeholder')"
+                    :placeholder="$t('menu.user.list.table.name.placeholder')"
                   />
                 </a-form-item>
               </a-col>
-              <a-col :span="8">
+              <a-col :span="6">
                 <a-form-item
-                  field="contentType"
-                  :label="$t('searchTable.form.contentType')"
+                  field="username"
+                  :label="$t('menu.user.list.table.username')"
                 >
-                  <a-select
-                    v-model="formModel.contentType"
-                    :options="contentTypeOptions"
-                    :placeholder="$t('searchTable.form.selectDefault')"
+                  <a-input
+                    v-model="formModel.username"
+                    :placeholder="
+                      $t('menu.user.list.table.username.placeholder')
+                    "
                   />
                 </a-form-item>
               </a-col>
-              <a-col :span="8">
+              <a-col :span="6">
                 <a-form-item
-                  field="filterType"
-                  :label="$t('searchTable.form.filterType')"
+                  field="nick_name"
+                  :label="$t('menu.user.list.table.nick_name')"
                 >
-                  <a-select
-                    v-model="formModel.filterType"
-                    :options="filterTypeOptions"
-                    :placeholder="$t('searchTable.form.selectDefault')"
+                  <a-input
+                    v-model="formModel.nick_name"
+                    :placeholder="
+                      $t('menu.user.list.table.nick_name.placeholder')
+                    "
                   />
                 </a-form-item>
               </a-col>
-              <a-col :span="8">
+              <a-col :span="6">
+                <a-form-item
+                  field="phone"
+                  :label="$t('menu.user.list.table.phone')"
+                >
+                  <a-input
+                    v-model="formModel.phone"
+                    :placeholder="$t('menu.user.list.table.phone.placeholder')"
+                  />
+                </a-form-item>
+              </a-col>
+              <a-col :span="6">
                 <a-form-item
                   field="createdTime"
-                  :label="$t('searchTable.form.createdTime')"
+                  :label="$t('menu.user.list.table.created_at')"
                 >
                   <a-range-picker
-                    v-model="formModel.createdTime"
+                    v-model="formModel.created_at"
                     style="width: 100%"
-                  />
-                </a-form-item>
-              </a-col>
-              <a-col :span="8">
-                <a-form-item
-                  field="status"
-                  :label="$t('searchTable.form.status')"
-                >
-                  <a-select
-                    v-model="formModel.status"
-                    :options="statusOptions"
-                    :placeholder="$t('searchTable.form.selectDefault')"
                   />
                 </a-form-item>
               </a-col>
@@ -100,25 +129,8 @@
       </a-row>
       <a-divider style="margin-top: 0" />
       <a-row style="margin-bottom: 16px">
-        <a-col :span="12">
-          <a-space>
-            <a-button type="primary">
-              <template #icon>
-                <icon-plus />
-              </template>
-              {{ $t('searchTable.operation.create') }}
-            </a-button>
-            <a-upload action="/">
-              <template #upload-button>
-                <a-button>
-                  {{ $t('searchTable.operation.import') }}
-                </a-button>
-              </template>
-            </a-upload>
-          </a-space>
-        </a-col>
         <a-col
-          :span="12"
+          :span="24"
           style="display: flex; align-items: center; justify-content: end"
         >
           <a-button>
@@ -199,11 +211,24 @@
         <template #avatar_url="{ record }">
           <a-space>
             <a-avatar :size="36" shape="square">
-              <img
-                alt="avatar"
+              <a-image
                 :src="
                   record.avatar_url ||
                   `${apiBaseUrl}/v1/user/generate/avatar/${record.uuid}`
+                "
+              />
+            </a-avatar>
+          </a-space>
+        </template>
+        <!-- parent.avatar_url -->
+        <template #parent_avatar_url="{ record }">
+          <a-space>
+            <a-avatar v-if="record?.parent?.uuid" :size="36" shape="square">
+              <a-image
+                alt="avatar"
+                :src="
+                  record?.parent?.avatar_url ||
+                  `${apiBaseUrl}/v1/user/generate/avatar/${record?.parent?.uuid}`
                 "
               />
             </a-avatar>
@@ -254,7 +279,6 @@
   import useLoading from '@/hooks/loading';
   import { getUserList, UserListData, UserListParams } from '@/api/user';
   import { Pagination } from '@/types/global';
-  import type { SelectOptionData } from '@arco-design/web-vue/es/select/interface';
   import type { TableColumnData } from '@arco-design/web-vue/es/table/interface';
   import cloneDeep from 'lodash/cloneDeep';
   import Sortable from 'sortablejs';
@@ -265,12 +289,14 @@
 
   const generateFormModel = () => {
     return {
-      number: '',
+      id: 0,
       name: '',
-      contentType: '',
-      filterType: '',
-      createdTime: [],
-      status: '',
+      username: '',
+      nick_name: '',
+      phone: '',
+      parent_id: 0,
+      is_easy_business: false,
+      created_at: [],
     };
   };
   const { loading, setLoading } = useLoading(true);
@@ -314,7 +340,7 @@
       slotName: 'id',
       ellipsis: true,
       tooltip: true,
-      width: 80,
+      width: 120,
     },
     {
       title: t('menu.user.list.table.avatar_url'),
@@ -370,7 +396,7 @@
       dataIndex: 'parent.id',
       ellipsis: true,
       tooltip: true,
-      width: 160,
+      width: 120,
     },
     {
       title: t('menu.user.list.table.parent.nick_name'),
@@ -379,7 +405,12 @@
       tooltip: true,
       width: 160,
     },
-    // point
+    {
+      title: t('menu.user.list.table.parent.avatar_url'),
+      dataIndex: 'parent.avatar_url',
+      slotName: 'parent_avatar_url',
+      width: 120,
+    },
     {
       title: t('menu.user.list.table.point'),
       dataIndex: 'point',
@@ -394,7 +425,6 @@
       tooltip: true,
       width: 160,
     },
-    // available_balance
     {
       title: t('menu.user.list.table.available_balance'),
       dataIndex: 'available_balance',
@@ -482,43 +512,17 @@
       width: 200,
     },
   ]);
-  const contentTypeOptions = computed<SelectOptionData[]>(() => [
-    {
-      label: t('searchTable.form.contentType.img'),
-      value: 'img',
-    },
-    {
-      label: t('searchTable.form.contentType.horizontalVideo'),
-      value: 'horizontalVideo',
-    },
-    {
-      label: t('searchTable.form.contentType.verticalVideo'),
-      value: 'verticalVideo',
-    },
-  ]);
-  const filterTypeOptions = computed<SelectOptionData[]>(() => [
-    {
-      label: t('searchTable.form.filterType.artificial'),
-      value: 'artificial',
-    },
-    {
-      label: t('searchTable.form.filterType.rules'),
-      value: 'rules',
-    },
-  ]);
-  const statusOptions = computed<SelectOptionData[]>(() => [
-    {
-      label: t('searchTable.form.status.online'),
-      value: 'online',
-    },
-    {
-      label: t('searchTable.form.status.offline'),
-      value: 'offline',
-    },
-  ]);
   const fetchData = async (params: UserListParams = { page: 1, limit: 20 }) => {
     setLoading(true);
     try {
+      params.created_at = formModel.value.created_at;
+      params.id = formModel.value.id;
+      params.is_easy_business = formModel.value.is_easy_business;
+      params.name = formModel.value.name;
+      params.username = formModel.value.username;
+      params.nick_name = formModel.value.nick_name;
+      params.phone = formModel.value.phone;
+      params.parent_id = formModel.value.parent_id;
       const data = await getUserList(params);
       renderData.value = data.list;
       pagination.current = params.page || 1;
@@ -531,6 +535,7 @@
   };
 
   const search = () => {
+    window.console.log(formModel.value);
     fetchData({
       page: pagination.current,
       limit: pagination.pageSize,
@@ -617,7 +622,7 @@
 
 <script lang="ts">
   export default {
-    name: 'SearchTable',
+    name: 'UserList',
   };
 </script>
 
