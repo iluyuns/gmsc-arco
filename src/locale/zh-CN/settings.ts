@@ -1,4 +1,5 @@
 export default {
+  'console.title': '控制台',
   'settings.title': '页面配置',
   'settings.themeColor': '主题色',
   'settings.content': '内容区域',

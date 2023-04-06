@@ -2,6 +2,43 @@ import http from './http';
 import { httpResponse } from './types';
 import { PageQuery } from './query';
 
+export interface UserRole {
+  id: number;
+  created_at: string;
+  updated_at: string;
+  deleted_at: string;
+  name: string;
+  description: string;
+}
+export interface UserData {
+  id: number;
+  name: string;
+  username: string;
+  nick_name: string;
+  phone: string;
+  created_at: string;
+  updated_at: string;
+  deleted_at: string;
+  user_roles: UserRole[];
+}
+
+export interface UserListResponse extends httpResponse {
+  list: UserData[];
+}
+
+export interface UserListPolicyParams {
+  id?: number;
+  parent_id?: number;
+  name?: string;
+  username?: string;
+  nick_name?: string;
+  phone?: string;
+  created_at?: Array<string>;
+  is_easy_business?: boolean;
+}
+
+export interface UserListParams extends PageQuery, UserListPolicyParams {}
+
 export interface LoginData {
   username: string;
   password: string;
@@ -38,52 +75,6 @@ export function getUserInfo() {
       });
   });
 }
-
-export interface UserListData {
-  id: number;
-  name: string;
-  username: string;
-  nick_name: string;
-  phone: string;
-  created_at: string;
-  updated_at: string;
-  deleted_at: string;
-  user_role: [
-    {
-      id: number;
-      created_at: string;
-      updated_at: string;
-      deleted_at: string;
-      user_id: number;
-      role_id: number;
-      role: {
-        id: number;
-        created_at: string;
-        updated_at: string;
-        deleted_at: string;
-        name: string;
-        description: string;
-      };
-    }
-  ];
-}
-
-export interface UserListResponse extends httpResponse {
-  list: UserListData[];
-}
-
-export interface UserListPolicyParams {
-  id?: number;
-  parent_id?: number;
-  name?: string;
-  username?: string;
-  nick_name?: string;
-  phone?: string;
-  created_at?: Array<string>;
-  is_easy_business?: boolean;
-}
-
-export interface UserListParams extends PageQuery, UserListPolicyParams {}
 
 export function getUserList(ulp = { page: 1 } as UserListParams) {
   // 转换 对象为 query string

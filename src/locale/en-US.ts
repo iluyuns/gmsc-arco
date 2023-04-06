@@ -40,7 +40,7 @@ export default {
   'menu.form': 'Form',
   'menu.profile': 'Profile',
   'menu.visualization': 'Data Visualization',
-  'menu.user': 'User Center',
+  'menu.user': 'User Management',
   'menu.arcoWebsite': 'Arco Design',
   'menu.faq': 'FAQ',
   'navbar.docs': 'Docs',

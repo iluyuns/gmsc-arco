@@ -1,4 +1,5 @@
 export default {
+  'console.title': 'Console',
   'settings.title': 'Settings',
   'settings.themeColor': 'Theme Color',
   'settings.content': 'Content Setting',

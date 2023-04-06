@@ -236,7 +236,7 @@
           {{ $t(`searchTable.form.status.${record.status}`) }}
         </template>
         <template #operations>
-          <a-button v-permission="['admin']" type="text" size="small">
+          <a-button v-permission="['超级管理员']" type="text" size="small">
             {{ $t('searchTable.columns.operations.view') }}
           </a-button>
         </template>

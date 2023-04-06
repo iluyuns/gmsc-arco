@@ -261,10 +261,7 @@
           </a-tag>
         </template>
         <template #operations>
-          <a-button v-permission="['admin']" type="text" size="small">
-            {{ $t('menu.user.list.table.operations.edit') }}
-          </a-button>
-          <a-button type="text" size="small">
+          <a-button v-permission="['超级管理员']" type="text" size="small">
             {{ $t('menu.user.list.table.operations.edit') }}
           </a-button>
         </template>
@@ -277,7 +274,7 @@
   import { computed, ref, reactive, watch, nextTick } from 'vue';
   import { useI18n } from 'vue-i18n';
   import useLoading from '@/hooks/loading';
-  import { getUserList, UserListData, UserListParams } from '@/api/user';
+  import { getUserList, UserData, UserListParams } from '@/api/user';
   import { Pagination } from '@/types/global';
   import type { TableColumnData } from '@arco-design/web-vue/es/table/interface';
   import cloneDeep from 'lodash/cloneDeep';
@@ -301,7 +298,7 @@
   };
   const { loading, setLoading } = useLoading(true);
   const { t } = useI18n();
-  const renderData = ref<UserListData[]>([]);
+  const renderData = ref<UserData[]>([]);
   const formModel = ref(generateFormModel());
   const cloneColumns = ref<Column[]>([]);
   const showColumns = ref<Column[]>([]);

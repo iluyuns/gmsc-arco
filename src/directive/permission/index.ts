@@ -1,16 +1,23 @@
 import { DirectiveBinding } from 'vue';
 import { useUserStore } from '@/store';
+import { UserData } from '@/api/user';
 
 function checkPermission(el: HTMLElement, binding: DirectiveBinding) {
   const { value } = binding;
   const userStore = useUserStore();
-  const { role } = userStore;
+  const { user } = userStore;
 
   if (Array.isArray(value)) {
     if (value.length > 0) {
+      const userInfo = user as UserData;
       const permissionValues = value;
-
-      const hasPermission = permissionValues.includes(role);
+      let hasPermission = false;
+      userInfo.user_roles.forEach((role) => {
+        if (permissionValues.includes(role.name)) {
+          hasPermission = true;
+        }
+      });
+      window.console.log('hasPermission', hasPermission);
       if (!hasPermission && el.parentNode) {
         el.parentNode.removeChild(el);
       }

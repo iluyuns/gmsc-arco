@@ -26,16 +26,8 @@ export interface UserState {
       created_at: string;
       updated_at: string;
       deleted_at: string;
-      user_id: number;
-      role_id: number;
-      role: {
-        id: number;
-        created_at: string;
-        updated_at: string;
-        deleted_at: string;
-        name: string;
-        description: string;
-      };
+      name: string;
+      description: string;
     }
   ];
   identity_card_type: number;
