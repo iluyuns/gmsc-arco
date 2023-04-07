@@ -27,6 +27,8 @@ import localeUserInfo from '@/views/user/info/locale/zh-CN';
 import localeUserList from '@/views/user/list/locale/zh-CN';
 import localeUserSetting from '@/views/user/setting/locale/zh-CN';
 
+import localeDepartmentGoods from '@/views/department/goods/locale/zh-CN';
+
 import localeSettings from './zh-CN/settings';
 
 export default {
@@ -66,4 +68,5 @@ export default {
   ...localeUserInfo,
   ...localeUserList,
   ...localeUserSetting,
+  ...localeDepartmentGoods,
 };

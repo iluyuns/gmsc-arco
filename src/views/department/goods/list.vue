@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <Breadcrumb :items="['menu.user', 'menu.user.list']" />
+    <Breadcrumb :items="['department.goods', 'department.goods.list']" />
     <a-card class="general-card" :title="$t('menu.user.list')">
       <a-row>
         <a-col :flex="1">
@@ -13,26 +13,17 @@
             <a-row :gutter="16">
               <a-col :span="6">
                 <a-form-item
-                  field="grade"
-                  :label="$t('menu.user.list.table.grade.name')"
+                  field="id"
+                  :label="$t('menu.user.list.table.is_easy_business')"
                 >
-                  <a-space direction="vertical">
-                    <a-select
-                      placeholder="$t('menu.user.list.table.grade.name')"
-                    >
-                      <a-space
-                        v-for="item in grades"
-                        :key="item.level"
-                        :value="item.level"
-                        direction="vertical"
-                        style="width: 100%"
-                      >
-                        <a-option :value="item.level">
-                          {{ item.name }}
-                        </a-option>
-                      </a-space>
-                    </a-select>
-                  </a-space>
+                  <a-switch v-model="formModel.is_easy_business">
+                    <template #checked>
+                      {{ $t('menu.user.list.table.is_easy_business.true') }}
+                    </template>
+                    <template #unchecked>
+                      {{ $t('menu.user.list.table.is_easy_business.false') }}
+                    </template>
+                  </a-switch>
                 </a-form-item>
               </a-col>
               <a-col :span="6">
@@ -288,22 +279,11 @@
   import type { TableColumnData } from '@arco-design/web-vue/es/table/interface';
   import cloneDeep from 'lodash/cloneDeep';
   import Sortable from 'sortablejs';
-  // getGradeAll
-  import { getGradeAll, Grade } from '@/api/grade';
 
   const apiBaseUrl = import.meta.env.VITE_API_BASE_URL as string;
   type SizeProps = 'mini' | 'small' | 'medium' | 'large';
   type Column = TableColumnData & { checked?: true };
-  const grades = ref<Grade[]>([]);
 
-  const getGradeAllList = async () => {
-    getGradeAll().then((res) => {
-      window.console.log(res);
-      const data = res.list as Grade[];
-      grades.value = data;
-    });
-  };
-  getGradeAllList();
   const generateFormModel = () => {
     return {
       id: 0,

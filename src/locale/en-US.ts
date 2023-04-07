@@ -27,6 +27,8 @@ import localeUserInfo from '@/views/user/info/locale/en-US';
 import localeUserList from '@/views/user/list/locale/en-US';
 import localeUserSetting from '@/views/user/setting/locale/en-US';
 
+import localeDepartmentGoods from '@/views/department/goods/locale/en-US';
+
 import localeSettings from './en-US/settings';
 
 export default {
@@ -66,4 +68,5 @@ export default {
   ...localeUserInfo,
   ...localeUserList,
   ...localeUserSetting,
+  ...localeDepartmentGoods,
 };
