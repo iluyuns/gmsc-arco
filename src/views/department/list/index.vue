@@ -1,7 +1,7 @@
 <template>
   <div class="container">
-    <Breadcrumb :items="['menu.user', 'menu.user.list']" />
-    <a-card class="general-card" :title="$t('menu.user.list')">
+    <Breadcrumb :items="['menu.department', 'menu.department.list']" />
+    <a-card class="general-card" :title="$t('menu.department.list')">
       <a-row>
         <a-col :flex="1">
           <a-form
@@ -41,19 +41,6 @@
               </a-col>
               <a-col :span="6">
                 <a-form-item
-                  field="parent_id"
-                  :label="$t('menu.user.list.table.parent.id')"
-                >
-                  <a-input-number
-                    v-model="formModel.parent_id"
-                    :placeholder="
-                      $t('menu.user.list.table.parent.id.placeholder')
-                    "
-                  />
-                </a-form-item>
-              </a-col>
-              <a-col :span="6">
-                <a-form-item
                   field="name"
                   :label="$t('menu.user.list.table.name')"
                 >
@@ -63,19 +50,7 @@
                   />
                 </a-form-item>
               </a-col>
-              <a-col :span="6">
-                <a-form-item
-                  field="username"
-                  :label="$t('menu.user.list.table.username')"
-                >
-                  <a-input
-                    v-model="formModel.username"
-                    :placeholder="
-                      $t('menu.user.list.table.username.placeholder')
-                    "
-                  />
-                </a-form-item>
-              </a-col>
+
               <a-col :span="6">
                 <a-form-item
                   field="nick_name"
@@ -266,7 +241,12 @@
   import { computed, ref, reactive, watch, nextTick } from 'vue';
   import { useI18n } from 'vue-i18n';
   import useLoading from '@/hooks/loading';
-  import { getUserList, UserData, UserListParams } from '@/api/user';
+  import {
+    getDepartmentList,
+    DepartmentList,
+    DepartmentListParams,
+  } from '@/api/department';
+
   import { Pagination } from '@/types/global';
   import type { TableColumnData } from '@arco-design/web-vue/es/table/interface';
   import cloneDeep from 'lodash/cloneDeep';
@@ -299,11 +279,11 @@
       phone: '',
       parent_id: 0,
       created_at: [],
-    };
+    } as DepartmentListParams;
   };
   const { loading, setLoading } = useLoading(true);
   const { t } = useI18n();
-  const renderData = ref<UserData[]>([]);
+  const renderData = ref<DepartmentList[]>([]);
   const formModel = ref(generateFormModel());
   const cloneColumns = ref<Column[]>([]);
   const showColumns = ref<Column[]>([]);
@@ -506,18 +486,20 @@
     //   width: 200,
     // },
   ]);
-  const fetchData = async (params: UserListParams = { page: 1, limit: 20 }) => {
+  const fetchData = async (
+    params: DepartmentListParams = { page: 1, limit: 20 }
+  ) => {
     setLoading(true);
     try {
       params.created_at = formModel.value.created_at;
       params.grade_level = formModel.value.grade_level;
       params.id = formModel.value.id;
       params.name = formModel.value.name;
-      params.username = formModel.value.username;
+      // params.username = formModel.value.username;
       params.nick_name = formModel.value.nick_name;
       params.phone = formModel.value.phone;
-      params.parent_id = formModel.value.parent_id;
-      const data = await getUserList(params);
+      // params.parent_id = formModel.value.parent_id;
+      const data = await getDepartmentList(params);
       renderData.value = data.list;
       pagination.current = params.page || 1;
       pagination.total = data.total;

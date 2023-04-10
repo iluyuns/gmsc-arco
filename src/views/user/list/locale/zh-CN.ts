@@ -18,6 +18,7 @@ export default {
   'menu.user.list.table.income_cash': '累积收入',
   'menu.user.list.table.available_balance': '可用余额',
   'menu.user.list.table.grade.name': '等级',
+  'menu.user.list.table.grade.name.placeholder': '请选择等级',
   'menu.user.list.table.point': '积分',
   'menu.user.list.table.user_roles': '角色',
   'menu.user.list.table.birthday': '生日',

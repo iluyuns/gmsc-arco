@@ -12,16 +12,16 @@ const USER: AppRouteRecordRaw = {
     order: 7,
   },
   children: [
-    {
-      path: 'info',
-      name: 'Info',
-      component: () => import('@/views/user/info/index.vue'),
-      meta: {
-        locale: 'menu.user.info',
-        requiresAuth: true,
-        roles: ['*'],
-      },
-    },
+    // {
+    //   path: 'info',
+    //   name: 'Info',
+    //   component: () => import('@/views/user/info/index.vue'),
+    //   meta: {
+    //     locale: 'menu.user.info',
+    //     requiresAuth: true,
+    //     roles: ['*'],
+    //   },
+    // },
     {
       path: 'list',
       name: 'UserList',
@@ -32,16 +32,16 @@ const USER: AppRouteRecordRaw = {
         roles: ['*'],
       },
     },
-    {
-      path: 'setting',
-      name: 'Setting',
-      component: () => import('@/views/user/setting/index.vue'),
-      meta: {
-        locale: 'menu.user.setting',
-        requiresAuth: true,
-        roles: ['*'],
-      },
-    },
+    // {
+    //   path: 'setting',
+    //   name: 'Setting',
+    //   component: () => import('@/views/user/setting/index.vue'),
+    //   meta: {
+    //     locale: 'menu.user.setting',
+    //     requiresAuth: true,
+    //     roles: ['*'],
+    //   },
+    // },
   ],
 };
 

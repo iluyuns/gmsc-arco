@@ -28,6 +28,7 @@ import localeUserList from '@/views/user/list/locale/en-US';
 import localeUserSetting from '@/views/user/setting/locale/en-US';
 
 import localeDepartmentGoods from '@/views/department/goods/locale/en-US';
+import localeDepartmentList from '@/views/department/list/locale/en-US';
 
 import localeSettings from './en-US/settings';
 
@@ -43,6 +44,7 @@ export default {
   'menu.profile': 'Profile',
   'menu.visualization': 'Data Visualization',
   'menu.user': 'User Management',
+  'menu.department': 'Department Management',
   'menu.arcoWebsite': 'Arco Design',
   'menu.faq': 'FAQ',
   'navbar.docs': 'Docs',
@@ -69,4 +71,5 @@ export default {
   ...localeUserList,
   ...localeUserSetting,
   ...localeDepartmentGoods,
+  ...localeDepartmentList,
 };

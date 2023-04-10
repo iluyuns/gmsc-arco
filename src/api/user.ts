@@ -15,6 +15,10 @@ export interface UserData {
   name: string;
   username: string;
   nick_name: string;
+  avatar_url: string;
+  email: string;
+  parent_id: number;
+  grade_level: number;
   phone: string;
   created_at: string;
   updated_at: string;
@@ -27,6 +31,7 @@ export interface UserListResponse extends httpResponse {
 }
 
 export interface UserListPolicyParams {
+  grade_level?: number;
   id?: number;
   parent_id?: number;
   name?: string;
