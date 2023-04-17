@@ -20,9 +20,6 @@ export interface UserData {
   parent_id: number;
   grade_level: number;
   phone: string;
-  created_at: string;
-  updated_at: string;
-  deleted_at: string;
   user_roles: UserRole[];
 }
 

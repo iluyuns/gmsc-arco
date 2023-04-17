@@ -12,3 +12,10 @@ export interface httpResponse {
 // Limit    int      `form:"limit" json:"limit" binding:"required"`
 // SortBy   []string `form:"sort_by" json:"sort_by"`
 // SortDesc []bool   `form:"sort_desc" json:"sort_desc"`
+
+export interface Model {
+  id?: number;
+  created_at?: string;
+  updated_at?: string;
+  deleted_at?: string;
+}
