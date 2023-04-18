@@ -30,6 +30,10 @@ import localeUserSetting from '@/views/user/setting/locale/zh-CN';
 import localeDepartmentGoods from '@/views/department/goods/locale/zh-CN';
 import localeDepartmentList from '@/views/department/list/locale/zh-CN';
 
+import localePoster from '@/views/poster/locale/zh-CN';
+import localePosterDesign from '@/views/poster/design/locale/zh-CN';
+import localePosterList from '@/views/poster/list/locale/zh-CN';
+
 import localeSettings from './zh-CN/settings';
 
 export default {
@@ -53,6 +57,19 @@ export default {
   'model.created_at': '创建时间',
   'model.updated_at': '更新时间',
   'model.deleted_at': '删除时间',
+  'model.name': '名称',
+  'model.title': '标题',
+  'model.description': '描述',
+  'model.status': '状态',
+  'model.width': '宽',
+  'model.height': '高',
+  'model.x': 'X',
+  'model.y': 'Y',
+  'model.z': 'Z',
+  'model.rotate': '旋转',
+  'model.scale': '缩放',
+  'model.opacity': '透明度',
+  'model.position': '位置',
   ...localeSettings,
   ...localeMessageBox,
   ...localeLogin,
@@ -76,4 +93,7 @@ export default {
   ...localeUserSetting,
   ...localeDepartmentGoods,
   ...localeDepartmentList,
+  ...localePoster,
+  ...localePosterDesign,
+  ...localePosterList,
 };

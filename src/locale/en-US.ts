@@ -30,6 +30,10 @@ import localeUserSetting from '@/views/user/setting/locale/en-US';
 import localeDepartmentGoods from '@/views/department/goods/locale/en-US';
 import localeDepartmentList from '@/views/department/list/locale/en-US';
 
+import localePoster from '@/views/poster/locale/en-US';
+import localePosterDesign from '@/views/poster/design/locale/en-US';
+import localePosterList from '@/views/poster/list/locale/en-US';
+
 import localeSettings from './en-US/settings';
 
 export default {
@@ -53,6 +57,18 @@ export default {
   'model.created_at': 'Created At',
   'model.updated_at': 'Updated At',
   'model.deleted_at': 'Deleted At',
+  'model.name': 'Name',
+  'model.description': 'Description',
+  'model.status': 'Status',
+  'model.width': 'width',
+  'model.height': 'height',
+  'model.x': 'X',
+  'model.y': 'Y',
+  'model.z': 'Z',
+  'model.rotate': 'Rotate',
+  'model.scale': 'Scale',
+  'model.opacity': 'Opacity',
+  'model.position': 'Position',
   ...localeSettings,
   ...localeMessageBox,
   ...localeLogin,
@@ -76,4 +92,7 @@ export default {
   ...localeUserSetting,
   ...localeDepartmentGoods,
   ...localeDepartmentList,
+  ...localePoster,
+  ...localePosterDesign,
+  ...localePosterList,
 };

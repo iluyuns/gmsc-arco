@@ -13,16 +13,17 @@ export interface PosterText {
   prefix: string;
   font_size: number;
   font_color: PosterTextColor;
+  color: string;
   x: number;
   y: number;
 }
 
 export interface PosterImage {
-  image_path: string;
-  x: number;
-  y: number;
-  width: number;
-  height: number;
+  image_path?: string;
+  x?: number;
+  y?: number;
+  width?: number;
+  height?: number;
 }
 
 export interface PosterData extends Model {
