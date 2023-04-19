@@ -1,15 +1,17 @@
 <template>
   <div>
     <a-layout>
-      <a-layout-content> <div ref="pixiApp"></div> </a-layout-content>
-      <a-layout-sider :width="360">
+      <a-layout-content>
+        <div ref="pixiApp"></div>
+      </a-layout-content>
+      <a-layout-sider :width="400">
         <a-tabs default-active-key="1">
           <a-tab-pane
             key="1"
             :title="$t('poster.design.title')"
             class="a-tab-pane"
           >
-            <Seting />
+            <Seting @submit="submit" @bg-scale="bgScale" />
           </a-tab-pane>
         </a-tabs>
       </a-layout-sider>
@@ -22,8 +24,6 @@
   import { ref, onMounted } from 'vue';
   import Seting from './components/seting.vue';
 
-  // 导入组件
-
   // 获取id为pixi_app的dom元素
   const pixiApp = ref(null as HTMLElement | null);
   // 创建pixi应用
@@ -35,21 +35,64 @@
   const stageWH = ref({ width: 750, height: 1300 });
   // 获取canvas元素
   const view = app.view as HTMLCanvasElement;
+
   // 创建一个海报容器和背景
   const stage = new PIXI.Container();
+  app.stage.addChild(stage);
+
+  // 创建一个拖拽和移动函数
+  let dragTarget = null as any;
+
+  function onDragMove(event: any) {
+    if (dragTarget) {
+      dragTarget.parent.toLocal(event.global, null, dragTarget.position);
+    }
+  }
+
+  function onDragStart(this: any) {
+    // store a reference to the data
+    // the reason for this is because of multitouch
+    // we want to track the movement of this particular touch
+    // this.data = event.data;
+    const target = this as any;
+    target.alpha = 0.5;
+    dragTarget = target;
+    app.stage.on('pointermove', onDragMove);
+  }
+
+  function onDragEnd() {
+    if (dragTarget) {
+      app.stage.off('pointermove', onDragMove);
+      dragTarget.alpha = 1;
+      dragTarget = null;
+    }
+  }
+  app.stage.interactive = true;
+  app.stage.hitArea = app.screen;
+  app.stage.on('pointerup', onDragEnd);
+  app.stage.on('pointerupoutside', onDragEnd);
+
   const BG = new PIXI.Graphics();
   stage.addChild(BG);
-  app.stage.addChild(stage);
+
+  BG.interactive = true;
+  BG.cursor = 'pointer';
+  BG.on('pointerdown', onDragStart, stage);
 
   const setStageWH = (w: number, h: number) => {
     stage.width = w / 2;
     stage.height = h / 2;
+
+    // 设置中心点
+    stage.pivot.set(stage.width / 2, stage.height / 2);
+
     BG.beginFill(0xe6e6e6);
     BG.drawRect(0, 0, w / 2, h / 2);
     BG.endFill();
     // 自动剧中 stage
-    stage.x = (app.renderer.width - stage.width) / 2;
-    stage.y = (app.renderer.height - stage.height) / 2;
+
+    stage.x = app.renderer.width / 2;
+    stage.y = app.renderer.height / 2;
   };
   // 设置海报默认的宽高
   const footerHeight = () => {
@@ -74,10 +117,19 @@
     setStageWH(stageWH.value.width, stageWH.value.height);
   };
 
+  // 背景缩放
+  const bgScale = (scale: number) => {
+    stage.scale.set(scale / 100, scale / 100);
+  };
+
   // 监听窗口大小变化
   window.addEventListener('resize', () => {
     resize();
   });
+
+  const submit = (e: any, data: any) => {
+    window.console.log(data);
+  };
 
   onMounted(() => {
     interface windowSelf extends Window {
@@ -89,9 +141,9 @@
     self.pixiApp = app as any;
     const width = pixiApp.value?.clientWidth;
     const height = window.innerHeight - 60 - 40;
-    app.renderer.resize((width || 800) - 300, height || 600);
-    setStageWH(stageWH.value.width, stageWH.value.height);
+    app.renderer.resize((width || 800) - 400, height || 600);
     pixiApp.value?.appendChild(view);
+    setStageWH(stageWH.value.width, stageWH.value.height);
   });
 </script>
 

@@ -1,7 +1,8 @@
 <template>
   <div class="container">
-    <Breadcrumb :items="['menu.poster', 'menu.poster.list']" />
-    <a-card class="general-card" :title="$t('menu.poster.list')">
+    <Breadcrumb :items="['menu.poster', 'poster.list']" />
+    <a-card class="general-card" :title="$t('poster.list')">
+      <FormCreate />
       <a-row>
         <a-col :flex="1">
           <a-form
@@ -11,16 +12,23 @@
             label-align="left"
           >
             <a-row :gutter="16">
-              <a-col :span="6">
-                <a-form-item
-                  field="grade"
-                  :label="$t('menu.poster.list.table.grade.name')"
-                >
+              <a-col :span="8">
+                <a-form-item field="name" :label="$t('model.name')">
+                  <a-input
+                    v-model="formModel.name"
+                    :placeholder="
+                      $t('model.placeholder.input') + $t('model.name')
+                    "
+                  />
+                </a-form-item>
+              </a-col>
+              <a-col :span="8">
+                <a-form-item field="grade" :label="$t('model.grade_name')">
                   <a-select
-                    v-model="formModel.grade_level"
+                    v-model="formModel.grade_value"
                     style="width: 100%"
                     :placeholder="
-                      $t('menu.poster.list.table.grade.name.placeholder')
+                      $t('model.placeholder.select') + $t('model.grade_name')
                     "
                   >
                     <template v-for="item in grades" :key="item.level">
@@ -31,84 +39,12 @@
                   </a-select>
                 </a-form-item>
               </a-col>
-              <a-col :span="6">
-                <a-form-item
-                  field="id"
-                  :label="$t('menu.poster.list.table.id')"
-                >
-                  <a-input-number
-                    v-model="formModel.id"
-                    :placeholder="$t('menu.poster.list.table.id.placeholder')"
-                  />
-                </a-form-item>
-              </a-col>
-              <a-col :span="6">
-                <a-form-item
-                  field="parent_id"
-                  :label="$t('menu.poster.list.table.parent.id')"
-                >
-                  <a-input-number
-                    v-model="formModel.parent_id"
-                    :placeholder="
-                      $t('menu.poster.list.table.parent.id.placeholder')
-                    "
-                  />
-                </a-form-item>
-              </a-col>
-              <a-col :span="6">
-                <a-form-item
-                  field="name"
-                  :label="$t('menu.poster.list.table.name')"
-                >
-                  <a-input
-                    v-model="formModel.name"
-                    :placeholder="$t('menu.poster.list.table.name.placeholder')"
-                  />
-                </a-form-item>
-              </a-col>
-              <a-col :span="6">
-                <a-form-item
-                  field="postername"
-                  :label="$t('menu.poster.list.table.postername')"
-                >
-                  <a-input
-                    v-model="formModel.postername"
-                    :placeholder="
-                      $t('menu.poster.list.table.postername.placeholder')
-                    "
-                  />
-                </a-form-item>
-              </a-col>
-              <a-col :span="6">
-                <a-form-item
-                  field="nick_name"
-                  :label="$t('menu.poster.list.table.nick_name')"
-                >
-                  <a-input
-                    v-model="formModel.nick_name"
-                    :placeholder="
-                      $t('menu.poster.list.table.nick_name.placeholder')
-                    "
-                  />
-                </a-form-item>
-              </a-col>
-              <a-col :span="6">
-                <a-form-item
-                  field="phone"
-                  :label="$t('menu.poster.list.table.phone')"
-                >
-                  <a-input
-                    v-model="formModel.phone"
-                    :placeholder="
-                      $t('menu.poster.list.table.phone.placeholder')
-                    "
-                  />
-                </a-form-item>
-              </a-col>
-              <a-col :span="6">
+              <a-col :span="8">
                 <a-form-item
                   field="createdTime"
-                  :label="$t('menu.poster.list.table.created_at')"
+                  :placeholder="
+                    $t('model.placeholder.select') + $t('model.created_at')
+                  "
                 >
                   <a-range-picker
                     v-model="formModel.created_at"
@@ -218,48 +154,9 @@
         <template #index="{ rowIndex }">
           {{ rowIndex + 1 + (pagination.current - 1) * pagination.pageSize }}
         </template>
-        <template #avatar_url="{ record }">
-          <a-space>
-            <a-avatar :size="36" shape="square">
-              <a-image
-                :src="
-                  record.avatar_url ||
-                  `${apiBaseUrl}/v1/poster/generate/avatar/${record.uuid}`
-                "
-              />
-            </a-avatar>
-          </a-space>
-        </template>
-        <!-- parent.avatar_url -->
-        <template #parent_avatar_url="{ record }">
-          <a-space>
-            <a-avatar v-if="record?.parent?.uuid" :size="36" shape="square">
-              <a-image
-                alt="avatar"
-                :src="
-                  record?.parent?.avatar_url ||
-                  `${apiBaseUrl}/v1/poster/generate/avatar/${record?.parent?.uuid}`
-                "
-              />
-            </a-avatar>
-          </a-space>
-        </template>
-        <template #poster_roles="{ record }">
-          <a-space
-            v-for="item in record.poster_roles"
-            :key="item.value"
-            :value="item.name"
-          >
-            <div style="padding: 0 8px">
-              <a-tag color="arcoblue" bordered style="" size="small">
-                {{ item.name }}
-              </a-tag>
-            </div>
-          </a-space>
-        </template>
         <template #operations>
           <a-button v-permission="['超级管理员']" type="text" size="small">
-            {{ $t('menu.poster.list.table.operations.edit') }}
+            {{ $t('poster.list.table.operations.edit') }}
           </a-button>
         </template>
       </a-table>
@@ -278,9 +175,10 @@
   import Sortable from 'sortablejs';
   // getGradeAll
   import { getGradeAll, Grade } from '@/api/grade';
+  import FormCreate from './components/create.vue';
 
-  const apiBaseUrl = import.meta.env.VITE_API_BASE_URL as string;
   type SizeProps = 'mini' | 'small' | 'medium' | 'large';
+
   type Column = TableColumnData & { checked?: true };
   const grades = ref<Grade[]>([]);
 
@@ -294,9 +192,10 @@
     });
   };
   getGradeAllList();
+
   const generateFormModel = () => {
     return {
-      grade_level: 0,
+      grade_value: 0,
       id: 0,
       name: '',
       postername: '',
@@ -310,6 +209,7 @@
   const { t } = useI18n();
   const renderData = ref<PosterData[]>([]);
   const formModel = ref(generateFormModel());
+
   const cloneColumns = ref<Column[]>([]);
   const showColumns = ref<Column[]>([]);
 
@@ -319,9 +219,11 @@
     current: 1,
     pageSize: 20,
   };
+
   const pagination = reactive({
     ...basePagination,
   });
+
   const densityList = computed(() => [
     {
       name: t('searchTable.size.mini'),
@@ -340,9 +242,10 @@
       value: 'large',
     },
   ]);
+
   const columns = computed<TableColumnData[]>(() => [
     {
-      title: t('menu.poster.list.table.id'),
+      title: t('model.id'),
       dataIndex: 'id',
       slotName: 'id',
       ellipsis: true,
@@ -350,167 +253,49 @@
       width: 120,
     },
     {
-      title: t('menu.poster.list.table.avatar_url'),
-      dataIndex: 'avatar_url',
-      slotName: 'avatar_url',
-      width: 80,
-    },
-    {
-      title: t('menu.poster.list.table.nick_name'),
-      dataIndex: 'nick_name',
-      ellipsis: true,
-      tooltip: true,
-      width: 120,
-    },
-    {
-      title: t('menu.poster.list.table.name'),
+      title: t('model.name'),
       dataIndex: 'name',
       ellipsis: true,
       tooltip: true,
       width: 80,
     },
     {
-      title: t('menu.poster.list.table.phone'),
+      title: t('model.phone'),
       dataIndex: 'phone',
       ellipsis: true,
       tooltip: true,
       width: 150,
     },
     {
-      title: t('menu.poster.list.table.postername'),
-      dataIndex: 'postername',
+      title: t('model.phone'),
+      dataIndex: 'phone',
       ellipsis: true,
       tooltip: true,
-      width: 160,
+      width: 150,
     },
     {
-      title: t('menu.poster.list.table.email'),
-      dataIndex: 'email',
-      ellipsis: true,
-      tooltip: true,
-      width: 160,
-    },
-    {
-      title: t('menu.poster.list.table.parent.id'),
-      dataIndex: 'parent.id',
-      ellipsis: true,
-      tooltip: true,
-      width: 120,
-    },
-    {
-      title: t('menu.poster.list.table.parent.nick_name'),
-      dataIndex: 'parent.nick_name',
-      ellipsis: true,
-      tooltip: true,
-      width: 160,
-    },
-    {
-      title: t('menu.poster.list.table.parent.avatar_url'),
-      dataIndex: 'parent.avatar_url',
-      slotName: 'parent_avatar_url',
-      width: 120,
-    },
-    {
-      title: t('menu.poster.list.table.point'),
-      dataIndex: 'point',
-      ellipsis: true,
-      tooltip: true,
-      width: 160,
-    },
-    {
-      title: t('menu.poster.list.table.income_cash'),
-      dataIndex: 'income_cash',
-      ellipsis: true,
-      tooltip: true,
-      width: 160,
-    },
-    {
-      title: t('menu.poster.list.table.available_balance'),
-      dataIndex: 'available_balance',
-      ellipsis: true,
-      tooltip: true,
-      width: 160,
-    },
-    {
-      title: t('menu.poster.list.table.grade.name'),
-      dataIndex: 'grade.name',
-      ellipsis: true,
-      tooltip: true,
-      width: 160,
-    },
-    {
-      title: t('menu.poster.list.table.poster_roles'),
-      dataIndex: 'poster_roles',
-      slotName: 'poster_roles',
-      ellipsis: true,
-      tooltip: true,
-      width: 260,
-    },
-    // birthday
-    {
-      title: t('menu.poster.list.table.birthday'),
-      dataIndex: 'birthday',
-      ellipsis: true,
-      tooltip: true,
-      width: 160,
-    },
-    {
-      title: t('menu.poster.list.table.union_id'),
-      dataIndex: 'union_id',
-      ellipsis: true,
-      tooltip: true,
-      width: 160,
-    },
-    {
-      title: t('menu.poster.list.table.open_id'),
-      dataIndex: 'open_id',
-      ellipsis: true,
-      tooltip: true,
-      width: 160,
-    },
-    {
-      title: t('menu.poster.list.table.uuid'),
-      dataIndex: 'uuid',
-      ellipsis: true,
-      tooltip: true,
-      width: 160,
-    },
-    {
-      title: t('menu.poster.list.table.source'),
-      dataIndex: 'source',
-      ellipsis: true,
-      tooltip: true,
-      width: 160,
-    },
-    {
-      title: t('menu.poster.list.table.source_desc'),
-      dataIndex: 'source_desc',
-      ellipsis: true,
-      tooltip: true,
-      width: 160,
-    },
-    {
-      title: t('menu.poster.list.table.created_at'),
+      title: t('model.created_at'),
       dataIndex: 'created_at',
       ellipsis: true,
       tooltip: true,
       width: 160,
     },
     {
-      title: t('menu.poster.list.table.updated_at'),
+      title: t('model.updated_at'),
       dataIndex: 'updated_at',
       ellipsis: true,
       tooltip: true,
       width: 160,
     },
-    // {
-    //   title: t('menu.poster.list.table.operations'),
-    //   dataIndex: 'operations',
-    //   slotName: 'operations',
-    //   fixed: 'right',
-    //   width: 200,
-    // },
+    {
+      title: t('model.operations'),
+      dataIndex: 'operations',
+      slotName: 'operations',
+      fixed: 'right',
+      width: 200,
+    },
   ]);
+
   const fetchData = async (
     params: PosterListParams = { page: 1, limit: 20 }
   ) => {

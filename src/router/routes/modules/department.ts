@@ -9,7 +9,7 @@ const Department: AppRouteRecordRaw = {
     locale: 'menu.department',
     icon: 'icon-user-group',
     requiresAuth: true,
-    order: 7,
+    order: 2,
   },
   children: [
     {

@@ -8,12 +8,12 @@ const LIST: AppRouteRecordRaw = {
   meta: {
     locale: 'menu.poster',
     requiresAuth: true,
-    icon: 'icon-list',
+    icon: 'icon-file-image',
     order: 3,
   },
   children: [
     {
-      path: 'PosterList', // The midline path complies with SEO specifications
+      path: 'list', // The midline path complies with SEO specifications
       name: 'PosterList',
       component: () => import('@/views/poster/list/index.vue'),
       meta: {
@@ -23,10 +23,11 @@ const LIST: AppRouteRecordRaw = {
       },
     },
     {
-      path: 'PosterDesign',
+      path: 'design',
       name: 'PosterDesign',
       component: () => import('@/views/poster/design/index.vue'),
       meta: {
+        // hideInMenu: true,
         locale: 'poster.design',
         requiresAuth: true,
         roles: ['*'],

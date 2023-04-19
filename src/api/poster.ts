@@ -47,7 +47,12 @@ export interface PosterListResponse extends httpResponse {
 
 export interface PosterListParams extends PageQuery, PosterData {}
 
-export function getPosterList(ulp = { page: 1 } as PosterListParams) {
+export function getPosterList(
+  ulp = {
+    page: 1,
+    limit: 10,
+  } as PosterListParams
+) {
   // 转换 对象为 query string
   const query = Object.keys(ulp)
     .map((key) => {
