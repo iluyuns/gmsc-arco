@@ -22,6 +22,9 @@
 <script lang="ts" setup>
   import * as PIXI from 'pixi.js';
   import { ref, onMounted } from 'vue';
+  import { getMiniProgramQrCodeByDefault } from '@/api/user';
+  import { PosterData } from '@/api/poster';
+
   import Seting from './components/seting.vue';
 
   // 获取id为pixi_app的dom元素
@@ -35,28 +38,26 @@
   const stageWH = ref({ width: 750, height: 1300 });
   // 获取canvas元素
   const view = app.view as HTMLCanvasElement;
-
   // 创建一个海报容器和背景
   const stage = new PIXI.Container();
   app.stage.addChild(stage);
 
   // 创建一个拖拽和移动函数
-  let dragTarget = null as any;
-
-  function onDragMove(event: any) {
+  let dragTarget = null as PIXI.Sprite | null;
+  const startPoint = { x: 0, y: 0 } as PIXI.Point;
+  function onDragMove(event: PIXI.FederatedPointerEvent) {
     if (dragTarget) {
-      dragTarget.parent.toLocal(event.global, null, dragTarget.position);
+      dragTarget.x = event.global.x - startPoint.x;
+      dragTarget.y = event.global.y - startPoint.y;
     }
   }
 
-  function onDragStart(this: any) {
-    // store a reference to the data
-    // the reason for this is because of multitouch
-    // we want to track the movement of this particular touch
-    // this.data = event.data;
-    const target = this as any;
+  function onDragStart(event: PIXI.FederatedPointerEvent) {
+    const target = event.target as PIXI.Sprite;
     target.alpha = 0.5;
     dragTarget = target;
+    startPoint.x = event.global.x - target.x;
+    startPoint.y = event.global.y - target.y;
     app.stage.on('pointermove', onDragMove);
   }
 
@@ -67,17 +68,39 @@
       dragTarget = null;
     }
   }
+
   app.stage.interactive = true;
   app.stage.hitArea = app.screen;
   app.stage.on('pointerup', onDragEnd);
   app.stage.on('pointerupoutside', onDragEnd);
 
-  const BG = new PIXI.Graphics();
-  stage.addChild(BG);
+  stage.interactive = true;
+  stage.cursor = 'pointer';
+  stage.on('pointerdown', onDragStart, stage);
 
-  BG.interactive = true;
-  BG.cursor = 'pointer';
-  BG.on('pointerdown', onDragStart, stage);
+  const BG = new PIXI.Graphics();
+
+  stage.addChild(BG);
+  let qrCode = new PIXI.Sprite();
+
+  const createQRCode = (url: string) => {
+    qrCode = PIXI.Sprite.from(url);
+    qrCode.interactive = true;
+    qrCode.cursor = 'pointer';
+    qrCode.on('pointerdown', onDragStart, qrCode);
+    qrCode.on('pointerup', onDragEnd);
+    qrCode.on('pointerupoutside', onDragEnd);
+    qrCode.x = 0;
+    qrCode.y = 0;
+    qrCode.width = 100;
+    qrCode.height = 100;
+    stage.addChild(qrCode);
+  };
+
+  // 获取小程序二维码默认
+  getMiniProgramQrCodeByDefault().then((res) => {
+    createQRCode(res.data);
+  });
 
   const setStageWH = (w: number, h: number) => {
     stage.width = w / 2;
@@ -127,7 +150,7 @@
     resize();
   });
 
-  const submit = (e: any, data: any) => {
+  const submit = (data: PosterData) => {
     window.console.log(data);
   };
 

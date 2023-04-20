@@ -92,3 +92,11 @@ export function getUserList(ulp = { page: 1 } as UserListParams) {
 export function getMenuList() {
   return http.get('/v1/menu');
 }
+
+export function getMiniProgramQrCodeByDefault() {
+  return http.get('/v1/user/mini_program/qr_code/default');
+}
+
+export function getMiniProgramQrCodeByUserID(userid: number) {
+  return http.get(`/v1/user/mini_program/qr_code/user_id/${userid}`);
+}

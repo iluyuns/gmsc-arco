@@ -245,10 +245,6 @@
     },
   ]);
 
-  const { t } = useI18n();
-
-  const form = ref({} as PosterData);
-
   const userId = ref({
     prefix: 'THGB:',
     font_size: 16,
@@ -270,6 +266,10 @@
     height: 120,
   } as PosterImage);
 
+  const { t } = useI18n();
+
+  const form = ref({} as PosterData);
+
   const rgba = ref({} as PosterTextColor);
 
   const onColorChange = (e: any) => {
@@ -287,13 +287,18 @@
     userId.value.font_color = rgba.value;
     window.console.log(userId.value.font_color);
   };
-  const emit = defineEmits(['submit', 'bgScale']);
-  const bgScale = (value: number | [number, number]) => {
+  const emit = defineEmits<{
+    (event: 'update', id: number): void;
+    (event: 'change', value: PosterData): void;
+    (event: 'bgScale', value: number): void;
+    (event: 'submit', value: PosterData): void;
+  }>();
+
+  const bgScale = (value: any) => {
     emit('bgScale', value);
   };
-
-  const submit = (e: any) => {
-    emit('submit', e, userId);
+  const submit = () => {
+    emit('submit', { user_id: userId.value });
   };
 </script>
 
