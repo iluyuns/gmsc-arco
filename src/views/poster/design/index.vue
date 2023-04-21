@@ -11,7 +11,11 @@
             :title="$t('poster.design.title')"
             class="a-tab-pane"
           >
-            <Seting @submit="submit" @bg-scale="bgScale" />
+            <Seting
+              @submit="submit"
+              @bg-scale="bgScale"
+              @change="SetingChange"
+            />
           </a-tab-pane>
         </a-tabs>
       </a-layout-sider>
@@ -22,10 +26,26 @@
 <script lang="ts" setup>
   import * as PIXI from 'pixi.js';
   import { ref, onMounted } from 'vue';
+  import { Message } from '@arco-design/web-vue';
+
   import { getMiniProgramQrCodeByDefault } from '@/api/user';
   import { PosterData } from '@/api/poster';
 
   import Seting from './components/seting.vue';
+
+  let baseURL = 'http://127.0.0.1';
+
+  if (import.meta.env.VITE_API_BASE_URL) {
+    baseURL = import.meta.env.VITE_API_BASE_URL;
+  }
+
+  const posterData = ref({
+    user_id: {
+      prefix: 'THGB:',
+      font_color: { R: 255, G: 255, B: 255, A: 255 },
+      font_size: 16,
+    },
+  } as PosterData);
 
   // 获取id为pixi_app的dom元素
   const pixiApp = ref(null as HTMLElement | null);
@@ -35,6 +55,7 @@
     height: 600,
     backgroundColor: 0x2c2c2c,
   });
+
   const stageWH = ref({ width: 750, height: 1300 });
   // 获取canvas元素
   const view = app.view as HTMLCanvasElement;
@@ -102,6 +123,38 @@
     createQRCode(res.data);
   });
 
+  // 加载字体
+  const fontTtf = `${baseURL}/v1/poster/font/FZLTXHK.TTF`;
+  PIXI.Assets.addBundle('fonts', {
+    FZLTXHK: fontTtf,
+  });
+
+  let userIdText = new PIXI.Text('00000002');
+  // 插入轻创码 Text 文本 默认 2
+  const qccode = '00000002';
+  PIXI.Assets.loadBundle('fonts')
+    .then(() => {
+      userIdText = new PIXI.Text(
+        (posterData.value.user_id ? posterData.value.user_id.prefix : '') +
+          qccode,
+        new PIXI.TextStyle({
+          fontFamily: 'FZLTXHK',
+          fontSize: 16,
+          fill: 0xffffff,
+          align: 'left',
+        })
+      );
+      userIdText.x = posterData.value.user_id?.x || 0;
+      userIdText.y = posterData.value.user_id?.y || 0;
+      userIdText.interactive = true;
+      userIdText.cursor = 'pointer';
+      userIdText.on('pointerdown', onDragStart, stage);
+      stage.addChild(userIdText);
+    })
+    .catch((err) => {
+      Message.error(err);
+    });
+
   const setStageWH = (w: number, h: number) => {
     stage.width = w / 2;
     stage.height = h / 2;
@@ -112,10 +165,8 @@
     BG.beginFill(0xe6e6e6);
     BG.drawRect(0, 0, w / 2, h / 2);
     BG.endFill();
-    // 自动剧中 stage
-
-    stage.x = app.renderer.width / 2;
-    stage.y = app.renderer.height / 2;
+    stage.x = app.renderer.width / 2 - stage.width / 2;
+    stage.y = app.renderer.height / 2 - stage.height / 2;
   };
   // 设置海报默认的宽高
   const footerHeight = () => {
@@ -150,6 +201,9 @@
     resize();
   });
 
+  const SetingChange = (data: PosterData) => {
+    window.console.log(data);
+  };
   const submit = (data: PosterData) => {
     window.console.log(data);
   };

@@ -156,9 +156,11 @@
           <a-form-item :label="t('poster.text.font')">
             <a-col :span="11">
               <a-input-number
-                v-model="userId.font_size"
+                :value="props.userIdFontSize"
                 size="mini"
                 hide-button
+                @input="emit('update:userIdFontSize', $event.target.value)"
+                @change="eventuserId.fontSize"
               >
                 <template #prepend>
                   <div class="prepend">{{ t('poster.text.font.size') }}</div>
@@ -191,7 +193,12 @@
           </a-form-item>
           <a-form-item :label="t('model.position')">
             <a-col :span="11">
-              <a-input-number v-model="userId.x" size="mini" hide-button>
+              <a-input-number
+                v-model="userId.x"
+                size="mini"
+                hide-button
+                @change="eventuserId.x"
+              >
                 <template #prepend>
                   <div class="prepend">{{ t('model.x') }}</div>
                 </template>
@@ -202,7 +209,12 @@
               <a-divider direction="vertical" />
             </a-col>
             <a-col :span="11">
-              <a-input-number v-model="userId.y" size="mini" hide-button>
+              <a-input-number
+                v-model="userId.y"
+                size="mini"
+                hide-button
+                @change="eventuserId.y"
+              >
                 <template #prepend>
                   <div class="prepend">{{ t('model.y') }}</div>
                 </template>
@@ -212,7 +224,11 @@
           </a-form-item>
           <a-form-item :label="t('poster.design.prefix')">
             <a-col :span="24">
-              <a-input v-model="userId.prefix" size="mini" />
+              <a-input
+                v-model="userId.prefix"
+                size="mini"
+                @change="eventuserId.prefix"
+              />
             </a-col>
           </a-form-item>
         </template>
@@ -232,7 +248,7 @@
     PosterText,
     PosterTextColor,
   } from '@/api/poster';
-  import { ref, defineEmits } from 'vue';
+  import { ref, defineEmits, watch } from 'vue';
   import { useI18n } from 'vue-i18n';
 
   const scale = ref(100);
@@ -252,6 +268,22 @@
     y: 1230,
   } as PosterText);
 
+  // 废弃
+  const eventuserId = {
+    prefix: (v: string) => {
+      userId.value.prefix = v;
+    },
+    fontSize: (v: number) => {
+      userId.value.font_size = v;
+    },
+    x: (v: number) => {
+      userId.value.x = v;
+    },
+    y: (v: number) => {
+      userId.value.y = v;
+    },
+  };
+
   const background = ref({
     width: 750,
     height: 1333,
@@ -260,6 +292,7 @@
   } as PosterImage);
 
   const qrcode = ref({
+    image_path: '',
     x: 300,
     y: 1000,
     width: 120,
@@ -287,16 +320,50 @@
     userId.value.font_color = rgba.value;
     window.console.log(userId.value.font_color);
   };
+
+  const props = defineProps({
+    userIdFontSize: {
+      type: Number,
+      default: 16,
+    },
+  });
+
   const emit = defineEmits<{
-    (event: 'update', id: number): void;
     (event: 'change', value: PosterData): void;
     (event: 'bgScale', value: number): void;
     (event: 'submit', value: PosterData): void;
+    (event: 'update:userIdFontSize'): void;
   }>();
+
+  // 监听 userId 的变化
+  watch(
+    userId,
+    (newVal) => {
+      emit('change', { ...form.value, user_id: newVal });
+    },
+    { deep: true }
+  );
+  // 监听 background 的变化
+  watch(
+    background,
+    (newVal) => {
+      emit('change', { ...form.value, background: newVal });
+    },
+    { deep: true }
+  );
+  // 监听 qrcode 的变化
+  watch(
+    qrcode,
+    (newVal) => {
+      emit('change', { ...form.value, mini_program_qr_code: newVal });
+    },
+    { deep: true }
+  );
 
   const bgScale = (value: any) => {
     emit('bgScale', value);
   };
+
   const submit = () => {
     emit('submit', { user_id: userId.value });
   };
