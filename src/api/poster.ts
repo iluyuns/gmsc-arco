@@ -31,21 +31,28 @@ export interface PosterData extends Model {
   dpi?: number;
   grade_value?: number;
   is_user_id?: boolean;
-  user_id?: PosterText;
+  user_id: PosterText;
   is_nick_name?: boolean;
-  nick_name?: PosterText;
+  nick_name: PosterText;
   is_avatar?: boolean;
-  avatar?: PosterImage;
-  background?: PosterImage;
-  mini_program_qr_code?: PosterImage;
+  avatar: PosterImage;
+  background: PosterImage;
+  mini_program_qr_code: PosterImage;
   sort?: number;
+}
+
+export interface PosterResponse extends httpResponse {
+  data: PosterData;
 }
 
 export interface PosterListResponse extends httpResponse {
   list: PosterData[];
 }
 
-export interface PosterListParams extends PageQuery, PosterData {}
+export interface PosterListParams extends PageQuery, Model {
+  name?: string;
+  grade_value?: number;
+}
 
 export function getPosterList(
   ulp = {
@@ -61,4 +68,8 @@ export function getPosterList(
     })
     .join('&');
   return http.get(`/v1/poster/list?${query}`) as Promise<PosterListResponse>;
+}
+
+export function getPoster(id: number) {
+  return http.get(`/v1/poster/id/${id}`) as Promise<PosterResponse>;
 }

@@ -2,7 +2,7 @@
   <div class="container">
     <Breadcrumb :items="['menu.poster', 'poster.list']" />
     <a-card class="general-card" :title="$t('poster.list')">
-      <FormCreate />
+      <!-- <FormCreate /> -->
       <a-row>
         <a-col :flex="1">
           <a-form
@@ -175,7 +175,7 @@
   import Sortable from 'sortablejs';
   // getGradeAll
   import { getGradeAll, Grade } from '@/api/grade';
-  import FormCreate from './components/create.vue';
+  // import FormCreate from './components/create.vue';
 
   type SizeProps = 'mini' | 'small' | 'medium' | 'large';
 

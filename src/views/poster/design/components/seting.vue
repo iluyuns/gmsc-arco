@@ -33,7 +33,7 @@
         <a-form-item :label="t('poster.design.background.size')">
           <a-col :span="11">
             <a-input-number
-              v-model="background.width"
+              v-model="form.background.width"
               size="mini"
               :placeholder="t('poster.design.background.width.placeholder')"
               hide-button
@@ -49,7 +49,7 @@
           </a-col>
           <a-col :span="11">
             <a-input-number
-              v-model="background.height"
+              v-model="form.background.height"
               size="mini"
               :placeholder="t('poster.design.background.height.placeholder')"
               hide-button
@@ -66,11 +66,13 @@
           <a-col :span="24">
             <a-upload
               list-type="picture"
-              action="/"
+              action="/v1/file/upload/one"
               :limit="1"
               image-preview
-              :default-file-list="fileList"
+              :data="{ use: '海报模板', name: form.name || '海报模板' }"
+              :file-list="fileList"
               style="display: unset; width: 100%"
+              :custom-request="customRequest"
             >
               <template #upload-button>
                 <a-button
@@ -91,7 +93,7 @@
         <a-form-item :label="t('poster.design.size')">
           <a-col :span="11">
             <a-input-number
-              v-model="qrcode.width"
+              v-model="form.mini_program_qr_code.width"
               size="mini"
               :placeholder="t('poster.design.background.width.placeholder')"
               hide-button
@@ -106,7 +108,7 @@
           </a-col>
           <a-col :span="11">
             <a-input-number
-              v-model="qrcode.height"
+              v-model="form.mini_program_qr_code.height"
               size="mini"
               :placeholder="t('poster.design.background.height.placeholder')"
               hide-button
@@ -119,30 +121,30 @@
         </a-form-item>
         <a-form-item :label="t('model.position')">
           <a-col :span="11">
-            <a-input-number v-model="userId.x" size="mini" hide-button>
+            <a-input-number
+              v-model="form.mini_program_qr_code.x"
+              size="mini"
+              hide-button
+            >
               <template #prepend>
                 <div class="prepend">{{ t('model.x') }}</div>
               </template>
-              <!-- <template #append>px</template> -->
             </a-input-number>
           </a-col>
           <a-col :span="2">
             <a-divider direction="vertical" />
           </a-col>
           <a-col :span="11">
-            <a-input-number v-model="userId.y" size="mini" hide-button>
+            <a-input-number
+              v-model="form.mini_program_qr_code.y"
+              size="mini"
+              hide-button
+            >
               <template #prepend>
                 <div class="prepend">{{ t('model.y') }}</div>
               </template>
               <!-- <template #append>px</template> -->
             </a-input-number>
-          </a-col>
-          <a-col :span="24">
-            <a-input v-model="userId.prefix" size="mini">
-              <template #prepend>
-                <div class="prepend">{{ t('poster.design.prefix') }}</div>
-              </template>
-            </a-input>
           </a-col>
         </a-form-item>
         <a-divider orientation="center">
@@ -156,11 +158,9 @@
           <a-form-item :label="t('poster.text.font')">
             <a-col :span="11">
               <a-input-number
-                :value="props.userIdFontSize"
+                v-model="form.user_id.font_size"
                 size="mini"
                 hide-button
-                @input="emit('update:userIdFontSize', $event.target.value)"
-                @change="eventuserId.fontSize"
               >
                 <template #prepend>
                   <div class="prepend">{{ t('poster.text.font.size') }}</div>
@@ -180,7 +180,7 @@
                 </span>
                 <span class="arco-input-wrapper">
                   <input
-                    v-model="userId.color"
+                    v-model="form.user_id.color"
                     size="mini"
                     type="color"
                     class="arco-input arco-input-size-mini"
@@ -193,12 +193,7 @@
           </a-form-item>
           <a-form-item :label="t('model.position')">
             <a-col :span="11">
-              <a-input-number
-                v-model="userId.x"
-                size="mini"
-                hide-button
-                @change="eventuserId.x"
-              >
+              <a-input-number v-model="form.user_id.x" size="mini" hide-button>
                 <template #prepend>
                   <div class="prepend">{{ t('model.x') }}</div>
                 </template>
@@ -209,12 +204,7 @@
               <a-divider direction="vertical" />
             </a-col>
             <a-col :span="11">
-              <a-input-number
-                v-model="userId.y"
-                size="mini"
-                hide-button
-                @change="eventuserId.y"
-              >
+              <a-input-number v-model="form.user_id.y" ize="mini" hide-button>
                 <template #prepend>
                   <div class="prepend">{{ t('model.y') }}</div>
                 </template>
@@ -224,11 +214,7 @@
           </a-form-item>
           <a-form-item :label="t('poster.design.prefix')">
             <a-col :span="24">
-              <a-input
-                v-model="userId.prefix"
-                size="mini"
-                @change="eventuserId.prefix"
-              />
+              <a-input v-model="form.user_id.prefix" size="mini" />
             </a-col>
           </a-form-item>
         </template>
@@ -244,67 +230,85 @@
   // 𠮷𠮶
   import {
     PosterData,
-    PosterImage,
-    PosterText,
+    // PosterImage,
+    // PosterText,
     PosterTextColor,
   } from '@/api/poster';
+  import { FileResponse, UploadOneFile } from '@/api/file';
   import { ref, defineEmits, watch } from 'vue';
   import { useI18n } from 'vue-i18n';
+  import { FileItem, FileStatus } from '@arco-design/web-vue/es/upload';
+  // import { getToken } from '@/utils/auth';
+
+  // const authToken = `Bearer ${getToken()}`;
+
+  // const headers = ref({
+  //   Authorization: authToken,
+  // } as Record<string, string>);
 
   const scale = ref(100);
 
-  const fileList = ref([
-    {
-      uid: '-2',
-      name: '20200717-103937.png',
-      url: '//p1-arco.byteimg.com/tos-cn-i-uwbnlip3yd/a8c8cdb109cb051163646151a4a5083b.png~tplv-uwbnlip3yd-webp.webp',
-    },
-  ]);
-
-  const userId = ref({
-    prefix: 'THGB:',
-    font_size: 16,
-    x: 300,
-    y: 1230,
-  } as PosterText);
-
-  // 废弃
-  const eventuserId = {
-    prefix: (v: string) => {
-      userId.value.prefix = v;
-    },
-    fontSize: (v: number) => {
-      userId.value.font_size = v;
-    },
-    x: (v: number) => {
-      userId.value.x = v;
-    },
-    y: (v: number) => {
-      userId.value.y = v;
-    },
-  };
-
-  const background = ref({
-    width: 750,
-    height: 1333,
-    image_path:
-      'https://p1-arco.byteimg.com/tos-cn-i-uwbnlip3yd/cd7a1aaea8e1c5e3d26fe2591e561798.png~tplv-uwbnlip3yd-webp.webp',
-  } as PosterImage);
-
-  const qrcode = ref({
-    image_path: '',
-    x: 300,
-    y: 1000,
-    width: 120,
-    height: 120,
-  } as PosterImage);
+  const fileList = ref([] as FileItem[]);
 
   const { t } = useI18n();
 
-  const form = ref({} as PosterData);
+  const props = defineProps<{
+    value: PosterData;
+  }>();
+
+  const done = 'done' as FileStatus;
+  // const init = 'init' as FileStatus;
+  const uploading = 'uploading' as FileStatus;
+  const error = 'error' as FileStatus;
+  const form = ref(props.value as PosterData);
+
+  const customRequest = (option: any) => {
+    const { fileItem } = option;
+    const uid = new Date().getTime();
+    fileList.value.push({
+      uid: uid as any,
+      status: uploading,
+      file: fileItem.file,
+    });
+    UploadOneFile(fileItem.file, {
+      use: 'poster',
+    })
+      .then((r) => {
+        // 成功
+        const { data } = r as FileResponse;
+        fileList.value = [];
+        fileList.value.push({
+          uid: uid as any,
+          name: data.name,
+          url: data.cdn_url,
+          status: done,
+          file: fileItem.file,
+          response: r,
+        });
+        form.value.background.image_path = data.cdn_url;
+      })
+      .catch((r) => {
+        // 失败
+        fileList.value = [];
+        fileList.value.push({
+          uid: uid as any,
+          status: error,
+          file: fileItem.file,
+          response: r,
+        });
+      });
+    return {
+      abort() {
+        window.console.log('upload progress is aborted.');
+      },
+    };
+  };
+
+  window.console.log(`props.value:`, props.value);
 
   const rgba = ref({} as PosterTextColor);
 
+  // 色彩变更
   const onColorChange = (e: any) => {
     let color = e.target.value as string;
     if (color.length === 7) {
@@ -312,50 +316,26 @@
     } else {
       color = '#000000ff';
     }
-    userId.value.color = color;
+    color += 'ff';
     rgba.value.R = parseInt(color.slice(1, 3), 16);
     rgba.value.G = parseInt(color.slice(3, 5), 16);
     rgba.value.B = parseInt(color.slice(5, 7), 16);
     rgba.value.A = parseInt(color.slice(7, 9), 16);
-    userId.value.font_color = rgba.value;
-    window.console.log(userId.value.font_color);
+    form.value.user_id.font_color = rgba.value;
   };
 
-  const props = defineProps({
-    userIdFontSize: {
-      type: Number,
-      default: 16,
-    },
-  });
-
   const emit = defineEmits<{
-    (event: 'change', value: PosterData): void;
     (event: 'bgScale', value: number): void;
     (event: 'submit', value: PosterData): void;
-    (event: 'update:userIdFontSize'): void;
+    (event: 'input', value: PosterData): void;
   }>();
 
   // 监听 userId 的变化
   watch(
-    userId,
+    form,
     (newVal) => {
-      emit('change', { ...form.value, user_id: newVal });
-    },
-    { deep: true }
-  );
-  // 监听 background 的变化
-  watch(
-    background,
-    (newVal) => {
-      emit('change', { ...form.value, background: newVal });
-    },
-    { deep: true }
-  );
-  // 监听 qrcode 的变化
-  watch(
-    qrcode,
-    (newVal) => {
-      emit('change', { ...form.value, mini_program_qr_code: newVal });
+      form.value = newVal;
+      emit('input', form.value);
     },
     { deep: true }
   );
@@ -365,7 +345,7 @@
   };
 
   const submit = () => {
-    emit('submit', { user_id: userId.value });
+    emit('submit', form.value);
   };
 </script>
 

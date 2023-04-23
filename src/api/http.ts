@@ -31,9 +31,32 @@ async function del(path: string) {
   });
 }
 
+// 上传文件
+async function uploadFile(
+  path: string,
+  file: File,
+  body = {} as { [key: string]: string }
+) {
+  const formData = new FormData();
+  formData.append('file', file);
+  Object.keys(body).forEach((key) => {
+    formData.append(key, body[key]);
+  });
+  const res = await axios.post(path, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+  const data = res as unknown as httpResponse;
+  return new Promise<httpResponse>((resolve) => {
+    resolve(data);
+  });
+}
+
 export default {
   post,
   get,
   put,
   del,
+  uploadFile,
 };
