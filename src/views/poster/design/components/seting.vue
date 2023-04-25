@@ -260,7 +260,19 @@
   // const init = 'init' as FileStatus;
   const uploading = 'uploading' as FileStatus;
   const error = 'error' as FileStatus;
+
   const form = ref(props.value as PosterData);
+
+  // 监听 props.value 的变化
+  watch(
+    () => props.value,
+    (val) => {
+      form.value = val;
+    },
+    {
+      deep: true,
+    }
+  );
 
   const customRequest = (option: any) => {
     const { fileItem } = option;

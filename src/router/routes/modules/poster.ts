@@ -23,12 +23,23 @@ const LIST: AppRouteRecordRaw = {
       },
     },
     {
-      path: 'design',
+      path: 'design/:id',
       name: 'PosterDesign',
       component: () => import('@/views/poster/design/index.vue'),
       meta: {
-        // hideInMenu: true,
+        hideInMenu: true,
         locale: 'poster.design',
+        requiresAuth: true,
+        roles: ['*'],
+      },
+    },
+    {
+      path: 'preview/:id',
+      name: 'PosterPreview',
+      component: () => import('@/views/poster/preview/index.vue'),
+      meta: {
+        hideInMenu: true,
+        locale: 'poster.preview',
         requiresAuth: true,
         roles: ['*'],
       },

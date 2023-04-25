@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <a-spin :loading="loading" tip="" style="width: 100%">
     <a-layout>
       <a-layout-content>
         <div ref="pixiApp"></div>
@@ -18,23 +18,74 @@
               @input="changePosterData"
             />
           </a-tab-pane>
+          <a-tab-pane
+            key="2"
+            :title="$t('model.back')"
+            class="a-tab-pane"
+            @click="previewOk"
+          >
+            <template #title>
+              <a-button type="text" @click="previewOk">
+                {{ $t('model.back') }}
+              </a-button>
+            </template>
+          </a-tab-pane>
         </a-tabs>
       </a-layout-sider>
     </a-layout>
-  </div>
+    <a-modal
+      :visible="previewData.cdn_url === '' ? false : true"
+      :ok-text="$t('poster.design.preview.ok')"
+      :cancel-text="$t('model.edit')"
+      unmount-on-close
+      @ok="previewOk"
+      @cancel="previewEdit"
+    >
+      <template #title>{{ $t('poster.design.preview') }}</template>
+      <a-image
+        width="100%"
+        height="500"
+        fit="contain"
+        :src="previewData.cdn_url"
+        :preview-props="previewPropsPopupContainer"
+      />
+    </a-modal>
+  </a-spin>
 </template>
 
 <script lang="ts" setup>
   import * as PIXI from 'pixi.js';
   import { ref, onMounted } from 'vue';
+  import { useRoute, useRouter } from 'vue-router';
   import { Message } from '@arco-design/web-vue';
 
   import { getMiniProgramQrCodeByDefault } from '@/api/user';
-  import { PosterData } from '@/api/poster';
+  import {
+    PosterData,
+    getPoster,
+    createPoster,
+    updatePoster,
+    UserPosterData,
+    previewPoster,
+    PosterTextColor,
+  } from '@/api/poster';
 
   import Seting from './components/seting.vue';
 
   let baseURL = 'http://127.0.0.1';
+
+  const router = useRouter();
+
+  const previewPropsPopupContainer = ref({
+    popupContainer: '#image-demo-preview-popup-container',
+    closable: false,
+  }) as any;
+
+  const previewData = ref({
+    cdn_url: '',
+  } as UserPosterData);
+
+  const loading = ref(true);
 
   if (import.meta.env.VITE_API_BASE_URL) {
     baseURL = import.meta.env.VITE_API_BASE_URL;
@@ -46,15 +97,14 @@
 
   const posterData = ref({
     name: '',
-    dpi: 96,
+    dpi: 72,
     grade_value: 0,
-    is_user_id: false,
+    is_user_id: true,
     user_id: {
       prefix: 'THGB:',
       font_size: 16,
-      color: '#ffffff',
-      x: 300,
-      y: 200,
+      x: 318,
+      y: 1180,
     },
     is_nick_name: false,
     nick_name: {},
@@ -67,10 +117,10 @@
     },
     mini_program_qr_code: {
       image_path: '',
-      x: 300,
+      x: 318,
       y: 1000,
-      width: 120,
-      height: 120,
+      width: 130,
+      height: 130,
     },
   } as PosterData);
 
@@ -103,11 +153,16 @@
       if (dragTarget.s_key === 'stage') {
         dragTarget.x = event.global.x - startPoint.x;
         dragTarget.y = event.global.y - startPoint.y;
+        // 取整
+        dragTarget.x = Math.round(dragTarget.x);
+        dragTarget.y = Math.round(dragTarget.y);
         posterData.value.background.width = dragTarget.width / sv;
         posterData.value.background.height = dragTarget.height / sv;
       } else {
         dragTarget.x = (event.global.x - startPoint.x) / sv;
         dragTarget.y = (event.global.y - startPoint.y) / sv;
+        dragTarget.x = Math.round(dragTarget.x);
+        dragTarget.y = Math.round(dragTarget.y);
         if (dragTarget.s_key === 'miniProgramQrCode') {
           posterData.value.mini_program_qr_code.x = dragTarget.x;
           posterData.value.mini_program_qr_code.y = dragTarget.y;
@@ -186,11 +241,18 @@
     stage.value.addChild(miniProgramQrCode.value as PIXI.Sprite);
   };
 
+  const miniProgramQrCodeImagePath = ref('');
   // 获取小程序二维码默认
-  getMiniProgramQrCodeByDefault().then((res) => {
-    posterData.value.mini_program_qr_code.image_path = res.data as string;
-    createQRCode();
-  });
+  getMiniProgramQrCodeByDefault()
+    .then((res) => {
+      miniProgramQrCodeImagePath.value = res.data as string;
+      posterData.value.mini_program_qr_code.image_path =
+        miniProgramQrCodeImagePath.value;
+      createQRCode();
+    })
+    .finally(() => {
+      loading.value = false;
+    });
 
   // 加载字体
   const fontTtf = `${baseURL}/v1/poster/font/FZLTXHK.TTF`;
@@ -202,34 +264,41 @@
   const userId = ref(new PIXI.Text('00000002'));
   // 插入轻创码 Text 文本 默认 2
   const qccode = '00000002';
-  PIXI.Assets.loadBundle('fonts')
-    .then(() => {
-      userId.value = new PIXI.Text(
-        (posterData.value.user_id ? posterData.value.user_id.prefix : '') +
-          qccode,
-        new PIXI.TextStyle({
-          fontFamily: 'FZLTXHK',
-          fontSize: 16,
-          fill: 0xffffff,
-          align: 'left',
-        })
-      );
-      userId.value.x = posterData.value.user_id?.x || 0;
-      userId.value.y = posterData.value.user_id?.y || 0;
-      userId.value.interactive = true;
-      if (posterData.value.is_user_id) {
-        userId.value.visible = true;
-      } else {
-        userId.value.visible = false;
-      }
-      userId.value.cursor = 'pointer';
-      (userId.value as any).s_key = 'userId';
-      userId.value.on('pointerdown', onDragStart);
-      stage.value.addChild(userId.value as PIXI.Text);
-    })
-    .catch((err) => {
-      Message.error(err);
-    });
+  let isUserIdInit = false;
+  const pixpUserIdInit = () => {
+    if (isUserIdInit) {
+      return;
+    }
+    isUserIdInit = true;
+    PIXI.Assets.loadBundle('fonts')
+      .then(() => {
+        userId.value = new PIXI.Text(
+          (posterData.value.user_id ? posterData.value.user_id.prefix : '') +
+            qccode,
+          new PIXI.TextStyle({
+            fontFamily: 'FZLTXHK',
+            fontSize: 16,
+            fill: posterData.value.user_id?.color || '#000000',
+            align: 'left',
+          })
+        );
+        userId.value.x = posterData.value.user_id?.x || 0;
+        userId.value.y = posterData.value.user_id?.y || 0;
+        userId.value.interactive = true;
+        if (posterData.value.is_user_id) {
+          userId.value.visible = true;
+        } else {
+          userId.value.visible = false;
+        }
+        userId.value.cursor = 'pointer';
+        (userId.value as any).s_key = 'userId';
+        userId.value.on('pointerdown', onDragStart);
+        stage.value.addChild(userId.value as PIXI.Text);
+      })
+      .catch((err) => {
+        Message.error(err);
+      });
+  };
   // 背景缩放
   const bgScale = (value: number) => {
     scale.value = value || 50;
@@ -263,19 +332,38 @@
     return 0;
   };
 
-  const resize = () => {
-    const width = pixiApp.value?.clientWidth;
-    const height = window.innerHeight - headerHeight() - footerHeight();
-    app.value.renderer.resize(width || 1200, height || 900);
-    setStageWH(
-      posterData.value.background.width || 750,
-      posterData.value.background.height || 1334
-    );
+  const rgbToHex = (rgba: PosterTextColor) => {
+    if (rgba) {
+      const rs = rgba.R.toString(16) || '00'; // 转成16进制
+      // 自动补零
+      const R = rs.length === 1 ? `0${rs}` : rs;
+      const gs = rgba.G.toString(16) || '00';
+      const G = gs.length === 1 ? `0${gs}` : gs;
+      const bs = rgba.B.toString(16) || '00';
+      const B = bs.length === 1 ? `0${bs}` : bs;
+      return `#${R}${G}${B}`;
+    }
+    return '#000000';
   };
 
   const changePosterData = (data: any) => {
+    pixpUserIdInit();
     posterData.value = data;
-
+    if (posterData.value.is_user_id) {
+      userId.value.visible = true;
+    } else {
+      userId.value.visible = false;
+    }
+    userId.value.x = posterData.value.user_id?.x || 0;
+    userId.value.y = posterData.value.user_id?.y || 0;
+    // 字体颜色
+    userId.value.style.fill = posterData.value.user_id?.color || 0xffffff;
+    // 字体大小
+    userId.value.style.fontSize = posterData.value.user_id?.font_size || 16;
+    // 文字改变
+    userId.value.text =
+      (posterData.value.user_id ? posterData.value.user_id.prefix : '') +
+      qccode;
     // 背景部分
     if (posterData.value.background.image_path) {
       background.value.texture = PIXI.Texture.from(
@@ -294,23 +382,6 @@
       );
     }
 
-    // 用户id
-    if (posterData.value.is_user_id) {
-      userId.value.visible = true;
-    } else {
-      userId.value.visible = false;
-    }
-    userId.value.x = posterData.value.user_id?.x || 0;
-    userId.value.y = posterData.value.user_id?.y || 0;
-    // 字体颜色
-    userId.value.style.fill = posterData.value.user_id?.color || 0xffffff;
-    // 字体大小
-    userId.value.style.fontSize = posterData.value.user_id?.font_size || 16;
-    // 文字改变
-    userId.value.text =
-      (posterData.value.user_id ? posterData.value.user_id.prefix : '') +
-      qccode;
-
     // 小程序二维码
     miniProgramQrCode.value.x = posterData.value.mini_program_qr_code.x || 0;
     miniProgramQrCode.value.y = posterData.value.mini_program_qr_code.y || 0;
@@ -320,13 +391,99 @@
       posterData.value.mini_program_qr_code.height || 100;
   };
 
+  const id = ref(0);
+  const route = useRoute();
+  if (route.params.id) {
+    id.value = parseInt(route.params.id as string, 10) || 0;
+    if (id.value) {
+      loading.value = true;
+      getPoster(id.value)
+        .then((res) => {
+          const data2 = res.data;
+          data2.user_id.color = rgbToHex(
+            res.data.user_id.font_color as PosterTextColor
+          );
+          data2.nick_name.color = rgbToHex(
+            res.data.nick_name.font_color as PosterTextColor
+          );
+          changePosterData(data2);
+        })
+        .finally(() => {
+          loading.value = false;
+        });
+    }
+  }
+  const resize = () => {
+    const width = pixiApp.value?.clientWidth;
+    const height = window.innerHeight - headerHeight() - footerHeight();
+    app.value.renderer.resize(width || 1200, height || 900);
+    setStageWH(
+      posterData.value.background.width || 750,
+      posterData.value.background.height || 1334
+    );
+  };
+
   // 监听窗口大小变化
   window.addEventListener('resize', () => {
     resize();
   });
+  // 编辑海报
+  const previewEdit = () => {
+    // 回到海报编辑
+    router.push({
+      name: 'PosterDesign',
+      params: {
+        id: previewData.value.poster_id,
+      },
+    });
+    previewData.value = {
+      poster_id: 0,
+      cdn_url: '',
+    } as UserPosterData;
+  };
+  // 预览完成返回
+  const previewOk = () => {
+    // 回到海报列表
+    router.push({
+      name: 'PosterList',
+    });
+  };
 
+  // 预览海报
+  const preview = (posterId: number) => {
+    // loading.value = true;
+    previewPoster(posterId)
+      .then((res) => {
+        previewData.value = res.data;
+      })
+      .finally(() => {
+        loading.value = false;
+      });
+  };
+
+  // 提交
   const submit = (data: PosterData) => {
-    window.console.log(data);
+    loading.value = true;
+    // 保存海报并预览
+    if (data.id) {
+      // 更新海报
+      updatePoster(data.id as number, data)
+        .then(() => {
+          // 保存成功
+          preview(data.id as number);
+        })
+        .catch(() => {
+          loading.value = false;
+        });
+      return;
+    }
+    createPoster(data)
+      .then((res) => {
+        preview(res.data.id as number);
+      })
+      .catch(() => {
+        loading.value = false;
+      });
   };
 
   onMounted(() => {

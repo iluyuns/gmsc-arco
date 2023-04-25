@@ -32,10 +32,12 @@
                 </a-form-item>
               </a-col>
               <a-col :span="6">
-                <a-form-item field="id" :label="$t('menu.user.list.table.id')">
+                <a-form-item field="id" :label="$t('model.id')">
                   <a-input-number
                     v-model="formModel.id"
-                    :placeholder="$t('menu.user.list.table.id.placeholder')"
+                    :placeholder="
+                      $t('model.placeholder.input') + $t('model.id')
+                    "
                   />
                 </a-form-item>
               </a-col>

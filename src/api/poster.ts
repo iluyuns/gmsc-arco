@@ -54,6 +54,18 @@ export interface PosterListParams extends PageQuery, Model {
   grade_value?: number;
 }
 
+export interface UserPosterData extends Model {
+  user_id: string;
+  poster_id: number;
+  Hash: string;
+  path: string;
+  cdn_url: string;
+}
+
+export interface UserPosterResponse extends httpResponse {
+  data: UserPosterData;
+}
+
 export function getPosterList(
   ulp = {
     page: 1,
@@ -72,4 +84,24 @@ export function getPosterList(
 
 export function getPoster(id: number) {
   return http.get(`/v1/poster/id/${id}`) as Promise<PosterResponse>;
+}
+
+// preview
+export function previewPoster(id: number) {
+  return http.get(`/v1/poster/id/${id}/preview`) as Promise<UserPosterResponse>;
+}
+
+// create
+export function createPoster(data: PosterData) {
+  return http.post(`/v1/poster`, data) as Promise<PosterResponse>;
+}
+
+// update
+export function updatePoster(id: number, data: PosterData) {
+  return http.put(`/v1/poster/id/${id}`, data) as Promise<PosterResponse>;
+}
+
+// delete
+export function deletePoster(id: number) {
+  return http.del(`/v1/poster/id/${id}`) as Promise<PosterResponse>;
 }

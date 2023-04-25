@@ -1,4 +1,6 @@
 export default {
+  'poster.design.preview.ok': 'ok',
+  'poster.design.preview': 'preview',
   'poster.design.prefix': 'prefix',
   'poster.design.size': 'size',
   'poster.design.title': 'Poster Design',

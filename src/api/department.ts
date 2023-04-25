@@ -12,6 +12,7 @@ export interface UserRole {
   name: string;
   description: string;
 }
+
 export interface DepartmentList {
   id: number;
   name: string;
@@ -42,27 +43,48 @@ export interface DepartmentListResponse extends httpResponse {
 }
 
 export interface DepartmentListPolicyParams {
-  grade_level?: number;
   id?: number;
+  user_id?: number;
+  department_grade_value?: number;
   name?: string;
-  nick_name?: string;
-  phone?: string;
-  created_at?: Array<string>;
+  contact_name?: string;
+  contact_phone?: string;
+  contact_id_card?: string;
+  bank_account?: string;
+  created_at_between?: Array<string>;
 }
 
-export interface DepartmentListParams
+export interface DepartmentListQueryParams
   extends PageQuery,
     DepartmentListPolicyParams {}
 
-export function getDepartmentList(ulp = { page: 1 } as DepartmentListParams) {
+export function getDepartmentList(
+  ulp = { page: 1 } as DepartmentListQueryParams
+) {
   // 转换 对象为 query string
   const query = Object.keys(ulp)
     .map((key) => {
-      const value = ulp[key as keyof DepartmentListParams] as string;
+      const value = ulp[key as keyof DepartmentListQueryParams] as string;
       return `${encodeURIComponent(key)}=${encodeURIComponent(value)}`;
     })
     .join('&');
   return http.get(
     `/v1/department/list?${query}`
   ) as Promise<DepartmentListResponse>;
+}
+
+// /grade/list
+export interface DepartmentGradeList {
+  value: number;
+  name: string;
+}
+
+export interface DepartmentGradeListResponse extends httpResponse {
+  list: DepartmentGradeList[];
+}
+
+export function getDepartmentGradeList() {
+  return http.get(
+    `/v1/department/grade/list`
+  ) as Promise<DepartmentGradeListResponse>;
 }

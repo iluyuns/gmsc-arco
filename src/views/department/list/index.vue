@@ -17,14 +17,17 @@
                   :label="$t('menu.user.list.table.grade.name')"
                 >
                   <a-select
-                    v-model="formModel.grade_level"
+                    v-model="formModel.department_grade_value"
                     style="width: 100%"
                     :placeholder="
                       $t('menu.user.list.table.grade.name.placeholder')
                     "
                   >
-                    <template v-for="item in grades" :key="item.level">
-                      <a-option :value="item.level" style="width: 100%">
+                    <template
+                      v-for="item in departmentGradeList"
+                      :key="item.value"
+                    >
+                      <a-option :value="item.value" style="width: 100%">
                         {{ item.name }}
                       </a-option>
                     </template>
@@ -57,7 +60,7 @@
                   :label="$t('menu.user.list.table.nick_name')"
                 >
                   <a-input
-                    v-model="formModel.nick_name"
+                    v-model="formModel.contact_name"
                     :placeholder="
                       $t('menu.user.list.table.nick_name.placeholder')
                     "
@@ -70,7 +73,7 @@
                   :label="$t('menu.user.list.table.phone')"
                 >
                   <a-input
-                    v-model="formModel.phone"
+                    v-model="formModel.contact_phone"
                     :placeholder="$t('menu.user.list.table.phone.placeholder')"
                   />
                 </a-form-item>
@@ -81,7 +84,7 @@
                   :label="$t('menu.user.list.table.created_at')"
                 >
                   <a-range-picker
-                    v-model="formModel.created_at"
+                    v-model="formModel.created_at_between"
                     style="width: 100%"
                   />
                 </a-form-item>
@@ -243,48 +246,42 @@
   import useLoading from '@/hooks/loading';
   import {
     getDepartmentList,
+    getDepartmentGradeList,
+    DepartmentGradeList,
     DepartmentList,
-    DepartmentListParams,
+    DepartmentListQueryParams,
   } from '@/api/department';
 
   import { Pagination } from '@/types/global';
   import type { TableColumnData } from '@arco-design/web-vue/es/table/interface';
   import cloneDeep from 'lodash/cloneDeep';
   import Sortable from 'sortablejs';
-  // getGradeAll
-  import { getGradeAll, Grade } from '@/api/grade';
 
   const apiBaseUrl = import.meta.env.VITE_API_BASE_URL as string;
   type SizeProps = 'mini' | 'small' | 'medium' | 'large';
   type Column = TableColumnData & { checked?: true };
-  const grades = ref<Grade[]>([]);
 
-  const getGradeAllList = async () => {
-    getGradeAll().then((res) => {
-      window.console.log(res);
-      const data = res.list as Grade[];
-      grades.value = [];
-      grades.value.push({ level: 0, name: '全部' } as Grade);
-      grades.value.push(...data);
+  const departmentGradeList = ref([] as DepartmentGradeList[]);
+  getDepartmentGradeList().then((res) => {
+    departmentGradeList.value = res.list;
+    departmentGradeList.value.push({
+      value: 0,
+      name: t('所有等级'),
     });
-  };
-  getGradeAllList();
+  });
+
   const generateFormModel = () => {
     return {
-      grade_level: 0,
       id: 0,
-      name: '',
-      username: '',
-      nick_name: '',
-      phone: '',
-      parent_id: 0,
-      created_at: [],
-    } as DepartmentListParams;
+      user_id: 0,
+    } as DepartmentListQueryParams;
   };
+
   const { loading, setLoading } = useLoading(true);
   const { t } = useI18n();
   const renderData = ref<DepartmentList[]>([]);
   const formModel = ref(generateFormModel());
+
   const cloneColumns = ref<Column[]>([]);
   const showColumns = ref<Column[]>([]);
 
@@ -478,27 +475,12 @@
       tooltip: true,
       width: 160,
     },
-    // {
-    //   title: t('menu.user.list.table.operations'),
-    //   dataIndex: 'operations',
-    //   slotName: 'operations',
-    //   fixed: 'right',
-    //   width: 200,
-    // },
   ]);
   const fetchData = async (
-    params: DepartmentListParams = { page: 1, limit: 20 }
+    params: DepartmentListQueryParams = { page: 1, limit: 20 }
   ) => {
     setLoading(true);
     try {
-      params.created_at = formModel.value.created_at;
-      params.grade_level = formModel.value.grade_level;
-      params.id = formModel.value.id;
-      params.name = formModel.value.name;
-      // params.username = formModel.value.username;
-      params.nick_name = formModel.value.nick_name;
-      params.phone = formModel.value.phone;
-      // params.parent_id = formModel.value.parent_id;
       const data = await getDepartmentList(params);
       renderData.value = data.list;
       pagination.current = params.page || 1;
@@ -511,11 +493,9 @@
   };
 
   const search = () => {
-    window.console.log(formModel.value);
-    fetchData({
-      page: pagination.current,
-      limit: pagination.pageSize,
-    });
+    formModel.value.page = pagination.current;
+    formModel.value.limit = pagination.pageSize;
+    fetchData(formModel.value);
   };
   const onPageChange = (current: number) => {
     fetchData({

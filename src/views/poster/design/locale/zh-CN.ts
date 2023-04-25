@@ -1,4 +1,6 @@
 export default {
+  'poster.design.preview.ok': '确认',
+  'poster.design.preview': '预览',
   'poster.design.prefix': '前缀',
   'poster.design.size': '尺寸',
   'poster.design.title': '海报设计',

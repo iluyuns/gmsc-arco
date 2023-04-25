@@ -1,30 +1,30 @@
 <template>
   <div class="container">
-    <Breadcrumb :items="['menu.poster', 'poster.list']" />
-    <a-card class="general-card" :title="$t('poster.list')">
+    <ABreadcrumb :items="['menu.poster', 'poster.list']" />
+    <ACard class="general-card" :title="$t('poster.list')">
       <!-- <FormCreate /> -->
-      <a-row>
-        <a-col :flex="1">
-          <a-form
+      <ARow>
+        <ACol :flex="1">
+          <AForm
             :model="formModel"
             :label-col-props="{ span: 6 }"
             :wrapper-col-props="{ span: 18 }"
             label-align="left"
           >
-            <a-row :gutter="16">
-              <a-col :span="8">
-                <a-form-item field="name" :label="$t('model.name')">
-                  <a-input
+            <ARow :gutter="16">
+              <ACol :span="8">
+                <AFormItem field="name" :label="$t('model.name')">
+                  <AInput
                     v-model="formModel.name"
                     :placeholder="
                       $t('model.placeholder.input') + $t('model.name')
                     "
                   />
-                </a-form-item>
-              </a-col>
-              <a-col :span="8">
-                <a-form-item field="grade" :label="$t('model.grade_name')">
-                  <a-select
+                </AFormItem>
+              </ACol>
+              <ACol :span="8">
+                <AFormItem field="grade" :label="$t('model.grade_name')">
+                  <ASelect
                     v-model="formModel.grade_value"
                     style="width: 100%"
                     :placeholder="
@@ -32,86 +32,96 @@
                     "
                   >
                     <template v-for="item in grades" :key="item.level">
-                      <a-option :value="item.level" style="width: 100%">
+                      <AOption :value="item.level" style="width: 100%">
                         {{ item.name }}
-                      </a-option>
+                      </AOption>
                     </template>
-                  </a-select>
-                </a-form-item>
-              </a-col>
-              <a-col :span="8">
-                <a-form-item
+                  </ASelect>
+                </AFormItem>
+              </ACol>
+              <ACol :span="8">
+                <AFormItem
                   field="createdTime"
                   :placeholder="
                     $t('model.placeholder.select') + $t('model.created_at')
                   "
                 >
-                  <a-range-picker
+                  <ARangePicker
                     v-model="formModel.created_at"
                     style="width: 100%"
                   />
-                </a-form-item>
-              </a-col>
-            </a-row>
-          </a-form>
-        </a-col>
-        <a-divider style="height: 84px" direction="vertical" />
-        <a-col :flex="'86px'" style="text-align: right">
-          <a-space direction="vertical" :size="18">
-            <a-button type="primary" @click="search">
+                </AFormItem>
+              </ACol>
+            </ARow>
+          </AForm>
+        </ACol>
+        <ADivider style="height: 84px" direction="vertical" />
+        <ACol :flex="'86px'" style="text-align: right">
+          <ASpace direction="vertical" :size="18">
+            <AButton type="primary" @click="search">
               <template #icon>
-                <icon-search />
+                <IconSearch />
               </template>
               {{ $t('searchTable.form.search') }}
-            </a-button>
-            <a-button @click="reset">
+            </AButton>
+            <AButton @click="reset">
               <template #icon>
-                <icon-refresh />
+                <IconRefresh />
               </template>
               {{ $t('searchTable.form.reset') }}
-            </a-button>
-          </a-space>
-        </a-col>
-      </a-row>
-      <a-divider style="margin-top: 0" />
-      <a-row style="margin-bottom: 16px">
-        <a-col
+            </AButton>
+          </ASpace>
+        </ACol>
+      </ARow>
+      <ADivider style="margin-top: 0" />
+      <ARow style="margin-bottom: 16px">
+        <ACol :span="12">
+          <ASpace>
+            <AButton type="primary" @click="createPoster">
+              <template #icon>
+                <IconPlus />
+              </template>
+              {{ $t('searchTable.operation.create') }}
+            </AButton>
+          </ASpace>
+        </ACol>
+        <ACol
           :span="24"
           style="display: flex; align-items: center; justify-content: end"
         >
-          <a-button>
+          <AButton>
             <template #icon>
-              <icon-download />
+              <IconDownload />
             </template>
             {{ $t('searchTable.operation.download') }}
-          </a-button>
-          <a-tooltip :content="$t('searchTable.actions.refresh')">
+          </AButton>
+          <ATooltip :content="$t('searchTable.actions.refresh')">
             <div class="action-icon" @click="search"
-              ><icon-refresh size="18"
+              ><IconRefresh size="18"
             /></div>
-          </a-tooltip>
-          <a-dropdown @select="handleSelectDensity">
-            <a-tooltip :content="$t('searchTable.actions.density')">
-              <div class="action-icon"><icon-line-height size="18" /></div>
-            </a-tooltip>
+          </ATooltip>
+          <ADropdown @select="handleSelectDensity">
+            <ATooltip :content="$t('searchTable.actions.density')">
+              <div class="action-icon"><IconLineHeight size="18" /></div>
+            </ATooltip>
             <template #content>
-              <a-doption
+              <ADoption
                 v-for="item in densityList"
                 :key="item.value"
                 :value="item.value"
                 :class="{ active: item.value === size }"
               >
                 <span>{{ item.name }}</span>
-              </a-doption>
+              </ADoption>
             </template>
-          </a-dropdown>
-          <a-tooltip :content="$t('searchTable.actions.columnSetting')">
-            <a-popover
+          </ADropdown>
+          <ATooltip :content="$t('searchTable.actions.columnSetting')">
+            <APopover
               trigger="click"
               position="bl"
               @popup-visible-change="popupVisibleChange"
             >
-              <div class="action-icon"><icon-settings size="18" /></div>
+              <div class="action-icon"><IconSettings size="18" /></div>
               <template #content>
                 <div id="tableSetting">
                   <div
@@ -120,16 +130,16 @@
                     class="setting"
                   >
                     <div style="margin-right: 4px; cursor: move">
-                      <icon-drag-arrow />
+                      <IconDragArrow />
                     </div>
                     <div>
-                      <a-checkbox
+                      <ACheckbox
                         v-model="item.checked"
                         @change="
                           handleChange($event, item as TableColumnData, index)
                         "
                       >
-                      </a-checkbox>
+                      </ACheckbox>
                     </div>
                     <div class="title">
                       {{ item.title === '#' ? '序列号' : item.title }}
@@ -137,11 +147,11 @@
                   </div>
                 </div>
               </template>
-            </a-popover>
-          </a-tooltip>
-        </a-col>
-      </a-row>
-      <a-table
+            </APopover>
+          </ATooltip>
+        </ACol>
+      </ARow>
+      <ATable
         row-key="id"
         :loading="loading"
         :pagination="pagination"
@@ -154,13 +164,43 @@
         <template #index="{ rowIndex }">
           {{ rowIndex + 1 + (pagination.current - 1) * pagination.pageSize }}
         </template>
-        <template #operations>
-          <a-button v-permission="['超级管理员']" type="text" size="small">
-            {{ $t('poster.list.table.operations.edit') }}
-          </a-button>
+        <template #BackgroundImagePath="{ record }">
+          <AImage
+            :src="record.background.image_path"
+            width="32"
+            height="32"
+            fit="cover"
+          />
         </template>
-      </a-table>
-    </a-card>
+        <template #operations="{ record }">
+          <AButton
+            v-permission="['超级管理员']"
+            type="primary"
+            size="small"
+            @click="toPosterDesign(record.id)"
+          >
+            {{ $t('model.edit') }}
+          </AButton>
+          <ADivider direction="vertical" />
+          <a-popconfirm
+            :content="$t('model.confirm.delete')"
+            :ok-text="$t('model.confirm')"
+            :cancel-text="$t('model.confirm.cancel')"
+            type="warning"
+            @ok="delPoster(record.id)"
+          >
+            <a-button
+              v-permission="['超级管理员']"
+              size="small"
+              type="primary"
+              status="danger"
+            >
+              {{ $t('model.delete') }}
+            </a-button>
+          </a-popconfirm>
+        </template>
+      </ATable>
+    </ACard>
   </div>
 </template>
 
@@ -168,11 +208,20 @@
   import { computed, ref, reactive, watch, nextTick } from 'vue';
   import { useI18n } from 'vue-i18n';
   import useLoading from '@/hooks/loading';
-  import { getPosterList, PosterData, PosterListParams } from '@/api/poster';
+  import {
+    getPosterList,
+    PosterData,
+    PosterListParams,
+    deletePoster,
+  } from '@/api/poster';
   import { Pagination } from '@/types/global';
   import type { TableColumnData } from '@arco-design/web-vue/es/table/interface';
   import cloneDeep from 'lodash/cloneDeep';
   import Sortable from 'sortablejs';
+
+  // router 路由
+  import { useRouter } from 'vue-router';
+
   // getGradeAll
   import { getGradeAll, Grade } from '@/api/grade';
   // import FormCreate from './components/create.vue';
@@ -181,6 +230,24 @@
 
   type Column = TableColumnData & { checked?: true };
   const grades = ref<Grade[]>([]);
+
+  const router = useRouter();
+
+  // 删除海报
+  const delPoster = (id: number) => {
+    deletePoster(id).finally(() => {
+      search();
+    });
+  };
+
+  // 调整海报设计页面
+  const toPosterDesign = (id: number) => {
+    router.push({ name: 'PosterDesign', params: { id } });
+  };
+
+  const createPoster = () => {
+    toPosterDesign(0);
+  };
 
   const getGradeAllList = async () => {
     getGradeAll().then((res) => {
@@ -250,25 +317,26 @@
       slotName: 'id',
       ellipsis: true,
       tooltip: true,
-      width: 120,
+      width: 80,
     },
     {
       title: t('model.name'),
       dataIndex: 'name',
       ellipsis: true,
       tooltip: true,
-      width: 80,
+      width: 200,
     },
     {
-      title: t('model.phone'),
-      dataIndex: 'phone',
+      title: t('model.dpi'),
+      dataIndex: 'dpi',
       ellipsis: true,
       tooltip: true,
-      width: 150,
+      width: 50,
     },
     {
-      title: t('model.phone'),
-      dataIndex: 'phone',
+      title: t('poster.background.image_path'),
+      dataIndex: 'background.image_path',
+      slotName: 'BackgroundImagePath',
       ellipsis: true,
       tooltip: true,
       width: 150,

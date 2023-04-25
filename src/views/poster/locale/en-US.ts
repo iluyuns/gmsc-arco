@@ -5,4 +5,5 @@ export default {
   'poster.text.font': 'font',
   'poster.text.font.size': 'font size',
   'poster.text.font.color': 'font color',
+  'poster.background.image_path': 'image',
 };
